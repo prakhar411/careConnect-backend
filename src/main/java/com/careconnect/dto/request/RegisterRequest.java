@@ -35,8 +35,10 @@ public class RegisterRequest {
     private String orgType;
     private String regNumber;
     private String contactPerson;
+    private String designation;
     private String address;
     private String city;
     private String state;
+    private String pincode;
     private String website;
 }

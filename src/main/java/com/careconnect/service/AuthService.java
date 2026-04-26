@@ -67,10 +67,12 @@ public class AuthService {
                     .orgType(request.getOrgType())
                     .regNumber(request.getRegNumber())
                     .contactPerson(request.getContactPerson())
+                    .designation(request.getDesignation())
                     .phone(request.getPhone())
                     .address(request.getAddress())
                     .city(request.getCity())
                     .state(request.getState())
+                    .pincode(request.getPincode())
                     .website(request.getWebsite())
                     .build();
             organizationRepository.save(org);

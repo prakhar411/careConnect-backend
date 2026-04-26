@@ -25,4 +25,10 @@ public class AdminController {
     public ResponseEntity<ApiResponse<Map<String, Long>>> getDashboardStats() {
         return ResponseEntity.ok(ApiResponse.success(organizationService.getDashboardStats()));
     }
+
+    @GetMapping("/org/{orgUserId}/profile")
+    @Operation(summary = "Get organization profile details by user ID")
+    public ResponseEntity<ApiResponse<Object>> getOrgProfile(@PathVariable Long orgUserId) {
+        return ResponseEntity.ok(ApiResponse.success(organizationService.getProfile(orgUserId)));
+    }
 }
