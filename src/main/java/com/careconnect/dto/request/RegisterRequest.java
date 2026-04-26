@@ -16,7 +16,7 @@ public class RegisterRequest {
     private String email;
 
     @NotBlank(message = "Please provide a valid <password>")
-    @Size(min = 8, message = "Please provide a valid <password>")
+    @Size(min = 12, message = "Password must be at least 12 characters")
     private String password;
 
     @NotNull(message = "Please provide a valid <role>")

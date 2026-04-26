@@ -83,7 +83,12 @@ public class AuthService {
     }
 
     public LoginResponse login(LoginRequest request) {
-        User user = userRepository.findByEmail(request.getIdentifier())
+        String identifier = request.getIdentifier();
+
+        // Try email first; fall back to org registration number
+        User user = userRepository.findByEmail(identifier)
+                .or(() -> organizationRepository.findByRegNumber(identifier)
+                        .map(org -> org.getUser()))
                 .orElseThrow(() -> new UnauthorizedException("Invalid credentials"));
 
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
