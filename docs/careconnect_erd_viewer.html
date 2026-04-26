@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>CareConnect — ER Diagram</title>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Segoe UI', Calibri, sans-serif;
+      background: #f0f7f4;
+      min-height: 100vh;
+    }
+
+    /* ── HEADER ─────────────────────────────────── */
+    .header {
+      background: linear-gradient(135deg, #0a3d2b, #0f5241, #145a4a);
+      color: white;
+      padding: 24px 40px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+    }
+    .header-left { display: flex; align-items: center; gap: 16px; }
+    .logo-circle {
+      width: 52px; height: 52px;
+      background: rgba(255,255,255,0.2);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 24px;
+    }
+    .header h1 { font-size: 22px; font-weight: 700; letter-spacing: -0.3px; }
+    .header p  { font-size: 13px; color: rgba(255,255,255,0.75); margin-top: 2px; }
+
+    /* ── TOOLBAR ────────────────────────────────── */
+    .toolbar {
+      background: white;
+      border-bottom: 1px solid #d0e8e0;
+      padding: 12px 40px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .toolbar-label { font-size: 13px; color: #5a7a70; font-weight: 600; margin-right: 4px; }
+
+    .btn {
+      display: inline-flex; align-items: center; gap: 7px;
+      padding: 9px 20px;
+      border: none; border-radius: 8px;
+      font-size: 13px; font-weight: 600;
+      cursor: pointer;
+      transition: all 0.18s;
+    }
+    .btn-png {
+      background: #0f5241; color: white;
+      box-shadow: 0 3px 10px -3px rgba(15,82,65,0.5);
+    }
+    .btn-png:hover { background: #0a3d2b; transform: translateY(-1px); }
+
+    .btn-svg {
+      background: white; color: #0f5241;
+      border: 1.5px solid #0f5241;
+    }
+    .btn-svg:hover { background: #eaf4f0; }
+
+    .btn-zoom {
+      background: #f0f7f4; color: #0f5241;
+      border: 1px solid #c0ddd4;
+      padding: 9px 14px;
+    }
+    .btn-zoom:hover { background: #e0efe8; }
+
+    .scale-display {
+      font-size: 13px; font-weight: 600; color: #0f5241;
+      min-width: 45px; text-align: center;
+    }
+
+    .toolbar-sep { width: 1px; height: 28px; background: #d0e8e0; margin: 0 4px; }
+
+    /* ── CANVAS AREA ────────────────────────────── */
+    .canvas-wrap {
+      padding: 30px;
+      overflow: auto;
+      min-height: calc(100vh - 130px);
+    }
+
+    .diagram-container {
+      background: white;
+      border-radius: 16px;
+      padding: 40px;
+      box-shadow: 0 8px 30px rgba(0,50,30,0.10);
+      display: inline-block;
+      min-width: 100%;
+      transform-origin: top left;
+      transition: transform 0.2s ease;
+    }
+
+    .diagram-title {
+      text-align: center;
+      margin-bottom: 28px;
+      padding-bottom: 18px;
+      border-bottom: 2px solid #e0efe8;
+    }
+    .diagram-title h2 { color: #0a3d2b; font-size: 18px; font-weight: 700; }
+    .diagram-title p  { color: #6a8c80; font-size: 12px; margin-top: 4px; }
+
+    #diagram { display: flex; justify-content: center; }
+    #diagram svg { max-width: 100%; height: auto; }
+
+    /* ── LEGEND ─────────────────────────────────── */
+    .legend {
+      margin-top: 28px;
+      padding-top: 18px;
+      border-top: 1px solid #e0efe8;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      justify-content: center;
+    }
+    .legend-item { display: flex; align-items: center; gap: 6px; font-size: 12px; color: #5a7a70; }
+    .legend-badge {
+      padding: 2px 9px; border-radius: 10px;
+      font-size: 11px; font-weight: 700;
+    }
+    .lb-pk { background: #0f5241; color: white; }
+    .lb-fk { background: #d97706; color: white; }
+    .lb-uk { background: #2563eb; color: white; }
+    .lb-1n { background: #e0efe8; color: #0f5241; border: 1px solid #b0d8c8; }
+    .lb-11 { background: #e8f0ff; color: #2563eb; border: 1px solid #b8caee; }
+
+    /* ── SPINNER ────────────────────────────────── */
+    .loading {
+      display: flex; align-items: center; justify-content: center;
+      gap: 12px; padding: 60px;
+      color: #0f5241; font-size: 15px; font-weight: 600;
+    }
+    .spinner {
+      width: 32px; height: 32px;
+      border: 3px solid #d0e8e0;
+      border-top-color: #0f5241;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── FOOTER ─────────────────────────────────── */
+    .footer {
+      text-align: center;
+      padding: 16px;
+      font-size: 12px;
+      color: #8aa898;
+    }
+  </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-left">
+    <div class="logo-circle">&#9829;</div>
+    <div>
+      <h1>CareConnect</h1>
+      <p>Entity Relationship Diagram &nbsp;|&nbsp; MySQL 8.0 &nbsp;|&nbsp; 11 Tables &nbsp;|&nbsp; 14 Relationships</p>
+    </div>
+  </div>
+  <div style="font-size:12px; color:rgba(255,255,255,0.6); text-align:right;">
+    Database Design Document<br>April 2026
+  </div>
+</div>
+
+<!-- TOOLBAR -->
+<div class="toolbar">
+  <span class="toolbar-label">Export:</span>
+  <button class="btn btn-png" onclick="downloadPNG()">
+    &#128247; Download PNG
+  </button>
+  <button class="btn btn-svg" onclick="downloadSVG()">
+    &#128190; Download SVG
+  </button>
+
+  <div class="toolbar-sep"></div>
+
+  <span class="toolbar-label">Zoom:</span>
+  <button class="btn btn-zoom" onclick="zoom(-0.1)">&#8722;</button>
+  <span class="scale-display" id="scaleDisplay">100%</span>
+  <button class="btn btn-zoom" onclick="zoom(+0.1)">&#43;</button>
+  <button class="btn btn-zoom" onclick="resetZoom()">Reset</button>
+</div>
+
+<!-- DIAGRAM CANVAS -->
+<div class="canvas-wrap">
+  <div class="diagram-container" id="diagramContainer">
+
+    <div class="diagram-title">
+      <h2>CareConnect — Entity Relationship Diagram</h2>
+      <p>Professional Nurse Hiring &amp; Healthcare Staffing Platform &nbsp;|&nbsp; careconnect_db</p>
+    </div>
+
+    <div id="diagram">
+      <div class="loading">
+        <div class="spinner"></div>
+        Rendering diagram…
+      </div>
+    </div>
+
+    <div class="legend">
+      <div class="legend-item"><span class="legend-badge lb-pk">PK</span> Primary Key</div>
+      <div class="legend-item"><span class="legend-badge lb-fk">FK</span> Foreign Key</div>
+      <div class="legend-item"><span class="legend-badge lb-uk">UK</span> Unique Key</div>
+      <div class="legend-item"><span class="legend-badge lb-1n">1 : N</span> One to Many</div>
+      <div class="legend-item"><span class="legend-badge lb-11">1 : 1</span> One to One</div>
+    </div>
+
+  </div>
+</div>
+
+<div class="footer">
+  CareConnect &nbsp;&bull;&nbsp; Database Design &nbsp;&bull;&nbsp; April 2026 &nbsp;&bull;&nbsp;
+  Open in Chrome or Edge for best results
+</div>
+
+
+<script>
+  /* ── MERMAID INIT ──────────────────────────── */
+  mermaid.initialize({
+    startOnLoad: false,
+    theme: 'base',
+    themeVariables: {
+      primaryColor:       '#eaf4f0',
+      primaryTextColor:   '#0a3d2b',
+      primaryBorderColor: '#0f5241',
+      lineColor:          '#0f5241',
+      secondaryColor:     '#f0f7f4',
+      tertiaryColor:      '#ffffff',
+      edgeLabelBackground:'#ffffff',
+      fontFamily:         'Segoe UI, Calibri, Arial, sans-serif',
+      fontSize:           '13px',
+    },
+    er: {
+      diagramPadding: 30,
+      layoutDirection: 'TB',
+      minEntityWidth: 100,
+      minEntityHeight: 75,
+      entityPadding: 15,
+      useMaxWidth: false,
+    },
+    securityLevel: 'loose',
+  });
+
+  const erdDefinition = `
+erDiagram
+
+    users {
+        BIGINT   id           PK
+        VARCHAR  email        UK
+        VARCHAR  password
+        ENUM     role         "PATIENT|NURSE|ORGANIZATION"
+        BOOLEAN  is_active
+        DATETIME created_at
+        DATETIME updated_at
+    }
+
+    patient_profiles {
+        BIGINT  id                      PK
+        BIGINT  user_id                 FK
+        VARCHAR full_name
+        DATE    date_of_birth
+        VARCHAR blood_group
+        VARCHAR phone
+        TEXT    address
+        VARCHAR city
+        VARCHAR state
+        VARCHAR emergency_contact
+        TEXT    medical_history
+        TEXT    allergies
+        TEXT    current_medications
+    }
+
+    nurse_profiles {
+        BIGINT  id                      PK
+        BIGINT  user_id                 FK
+        VARCHAR full_name
+        VARCHAR license_number          UK
+        VARCHAR phone
+        VARCHAR specialization
+        VARCHAR education
+        INT     experience_years
+        VARCHAR expertise
+        TEXT    previous_employment
+        TEXT    professional_references
+        VARCHAR availability
+        DOUBLE  rating
+        VARCHAR profile_status
+    }
+
+    organizations {
+        BIGINT   id              PK
+        BIGINT   user_id         FK
+        VARCHAR  org_name
+        VARCHAR  org_type
+        VARCHAR  reg_number      UK
+        VARCHAR  contact_person
+        VARCHAR  designation
+        VARCHAR  phone
+        TEXT     address
+        VARCHAR  city
+        VARCHAR  state
+        VARCHAR  pincode
+        VARCHAR  website
+        VARCHAR  status
+        DATETIME created_at
+    }
+
+    jobs {
+        BIGINT   id               PK
+        BIGINT   organization_id  FK
+        VARCHAR  job_title
+        VARCHAR  department
+        VARCHAR  location
+        ENUM     job_type         "TEMPORARY|PERMANENT|EMERGENCY|CONTRACT"
+        VARCHAR  specialization
+        DECIMAL  salary_min
+        DECIMAL  salary_max
+        TEXT     description
+        VARCHAR  priority
+        DATE     deadline
+        ENUM     status           "ACTIVE|CLOSED|DRAFT"
+        DATETIME created_at
+    }
+
+    appointments {
+        BIGINT   id                PK
+        BIGINT   patient_id        FK
+        BIGINT   nurse_id          FK
+        DATETIME appointment_date
+        DATETIME end_date
+        VARCHAR  care_needs
+        VARCHAR  required_skills
+        VARCHAR  duration
+        TEXT     notes
+        ENUM     status            "PENDING|CONFIRMED|IN_PROGRESS|COMPLETED|CANCELLED"
+        DATETIME created_at
+    }
+
+    medical_records {
+        BIGINT   id           PK
+        BIGINT   patient_id   FK
+        BIGINT   uploaded_by  FK
+        VARCHAR  record_type
+        VARCHAR  title
+        TEXT     description
+        VARCHAR  file_url
+        VARCHAR  file_name
+        DATETIME created_at
+    }
+
+    nurse_applications {
+        BIGINT   id          PK
+        BIGINT   nurse_id    FK
+        BIGINT   job_id      FK
+        TEXT     cover_note
+        ENUM     status      "PENDING|APPROVED|REJECTED"
+        DATETIME applied_at
+    }
+
+    compliance_records {
+        BIGINT   id               PK
+        BIGINT   organization_id  FK
+        VARCHAR  nurse_name
+        VARCHAR  requirement
+        DATE     due_date
+        TEXT     notes
+        ENUM     status           "COMPLIANT|PENDING|NON_COMPLIANT"
+        DATETIME created_at
+    }
+
+    credentials {
+        BIGINT   id               PK
+        BIGINT   nurse_id         FK
+        VARCHAR  credential_type
+        VARCHAR  issued_by
+        DATE     issued_date
+        DATE     expiry_date
+        VARCHAR  document_url
+        ENUM     status           "VERIFIED|PENDING|EXPIRED"
+        DATETIME created_at
+    }
+
+    payments {
+        BIGINT   id               PK
+        BIGINT   nurse_id         FK
+        BIGINT   appointment_id   FK
+        DECIMAL  amount
+        VARCHAR  payment_method
+        VARCHAR  payment_structure
+        DECIMAL  hours_worked
+        DECIMAL  tax_deduction
+        TEXT     description
+        ENUM     status           "PENDING|PROCESSED|FAILED|REFUNDED"
+        DATETIME payment_date
+    }
+
+    users             ||--o| patient_profiles   : "1:1"
+    users             ||--o| nurse_profiles     : "1:1"
+    users             ||--o| organizations      : "1:1"
+
+    patient_profiles  ||--o{ appointments       : "1:N  books"
+    nurse_profiles    ||--o{ appointments       : "1:N  assigned"
+
+    patient_profiles  ||--o{ medical_records    : "1:N  owns"
+    users             ||--o{ medical_records    : "1:N  uploads"
+
+    organizations     ||--o{ jobs               : "1:N  posts"
+    organizations     ||--o{ compliance_records : "1:N  tracks"
+
+    nurse_profiles    ||--o{ nurse_applications : "1:N  applies"
+    jobs              ||--o{ nurse_applications : "1:N  receives"
+
+    nurse_profiles    ||--o{ credentials        : "1:N  holds"
+    nurse_profiles    ||--o{ payments           : "1:N  receives"
+    appointments      ||--o{ payments           : "1:N  generates"
+`;
+
+  /* ── RENDER ────────────────────────────────── */
+  async function renderDiagram() {
+    const container = document.getElementById('diagram');
+    try {
+      const { svg } = await mermaid.render('erdSvg', erdDefinition);
+      container.innerHTML = svg;
+    } catch (err) {
+      container.innerHTML = `<div style="color:#dc2626;padding:20px;font-size:13px;">
+        <strong>Render error:</strong> ${err.message}<br>
+        <em>Make sure you are connected to the internet (Mermaid CDN required).</em>
+      </div>`;
+      console.error(err);
+    }
+  }
+
+  /* ── ZOOM ──────────────────────────────────── */
+  let currentScale = 1.0;
+  function zoom(delta) {
+    currentScale = Math.min(3.0, Math.max(0.3, currentScale + delta));
+    applyZoom();
+  }
+  function resetZoom() {
+    currentScale = 1.0;
+    applyZoom();
+  }
+  function applyZoom() {
+    document.getElementById('diagramContainer').style.transform = `scale(${currentScale})`;
+    document.getElementById('scaleDisplay').textContent = Math.round(currentScale * 100) + '%';
+  }
+
+  /* ── DOWNLOAD SVG ──────────────────────────── */
+  function downloadSVG() {
+    const svgEl = document.querySelector('#diagram svg');
+    if (!svgEl) { alert('Diagram not loaded yet. Please wait.'); return; }
+
+    const serializer = new XMLSerializer();
+    let svgStr = serializer.serializeToString(svgEl);
+    if (!svgStr.includes('xmlns=')) {
+      svgStr = svgStr.replace('<svg', '<svg xmlns="http://www.w3.org/2000/svg"');
+    }
+
+    const blob = new Blob([svgStr], { type: 'image/svg+xml;charset=utf-8' });
+    const url  = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href     = url;
+    link.download = 'careconnect_erd.svg';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  }
+
+  /* ── DOWNLOAD PNG ──────────────────────────── */
+  function downloadPNG() {
+    const svgEl = document.querySelector('#diagram svg');
+    if (!svgEl) { alert('Diagram not loaded yet. Please wait.'); return; }
+
+    const SCALE  = 3;  // 3x for high resolution
+    const bbox   = svgEl.getBoundingClientRect();
+    const width  = Math.max(bbox.width,  1200) * SCALE;
+    const height = Math.max(bbox.height,  800) * SCALE;
+
+    const serializer = new XMLSerializer();
+    let svgStr = serializer.serializeToString(svgEl);
+    if (!svgStr.includes('xmlns=')) {
+      svgStr = svgStr.replace('<svg', '<svg xmlns="http://www.w3.org/2000/svg"');
+    }
+
+    const svgBlob = new Blob([svgStr], { type: 'image/svg+xml;charset=utf-8' });
+    const svgUrl  = URL.createObjectURL(svgBlob);
+
+    const canvas  = document.createElement('canvas');
+    canvas.width  = width;
+    canvas.height = height;
+    const ctx     = canvas.getContext('2d');
+
+    // White background
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(0, 0, width, height);
+
+    // Draw a subtle header bar on the PNG
+    ctx.fillStyle = '#0f5241';
+    ctx.fillRect(0, 0, width, 60 * SCALE);
+    ctx.fillStyle = '#ffffff';
+    ctx.font      = `bold ${16 * SCALE}px Segoe UI, Arial`;
+    ctx.fillText('CareConnect — Entity Relationship Diagram', 24 * SCALE, 38 * SCALE);
+
+    const img    = new Image();
+    img.onload   = function () {
+      ctx.scale(SCALE, SCALE);
+      ctx.drawImage(img, 0, 60);
+      URL.revokeObjectURL(svgUrl);
+
+      canvas.toBlob(function (blob) {
+        const url  = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href     = url;
+        link.download = 'careconnect_erd.png';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+      }, 'image/png');
+    };
+    img.onerror  = () => alert('PNG export failed. Try SVG instead.');
+    img.src      = svgUrl;
+  }
+
+  /* ── BOOT ──────────────────────────────────── */
+  window.addEventListener('load', renderDiagram);
+</script>
+
+</body>
+</html>

@@ -1,0 +1,982 @@
+<!DOCTYPE html>
+<html xmlns:o="urn:schemas-microsoft-com:office:office"
+      xmlns:w="urn:schemas-microsoft-com:office:word"
+      xmlns="http://www.w3.org/TR/REC-html40">
+<head>
+  <meta charset="UTF-8">
+  <title>CareConnect – Database Design Document</title>
+  <!--[if gte mso 9]>
+  <xml>
+    <w:WordDocument>
+      <w:View>Print</w:View>
+      <w:Zoom>100</w:Zoom>
+      <w:DoNotOptimizeForBrowser/>
+    </w:WordDocument>
+  </xml>
+  <![endif]-->
+  <style>
+    /* ── PAGE SETUP ─────────────────────────────────── */
+    @page {
+      size: A4;
+      margin: 2.5cm 2.5cm 2.5cm 2.5cm;
+    }
+    body {
+      font-family: Calibri, Arial, sans-serif;
+      font-size: 11pt;
+      color: #1a1a1a;
+      line-height: 1.5;
+      margin: 0;
+      padding: 0;
+    }
+
+    /* ── COVER PAGE ─────────────────────────────────── */
+    .cover-page {
+      text-align: center;
+      padding: 100px 40px 60px;
+      page-break-after: always;
+    }
+    .cover-logo {
+      width: 80px;
+      height: 80px;
+      background: #0f5241;
+      border-radius: 50%;
+      margin: 0 auto 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 36px;
+      color: white;
+      line-height: 80px;
+    }
+    .cover-title {
+      font-size: 28pt;
+      font-weight: 700;
+      color: #0a3d2b;
+      margin: 20px 0 8px;
+      letter-spacing: -0.5px;
+    }
+    .cover-subtitle {
+      font-size: 16pt;
+      color: #0f5241;
+      margin-bottom: 40px;
+    }
+    .cover-divider {
+      border: none;
+      border-top: 3px solid #0f5241;
+      margin: 30px auto;
+      width: 80px;
+    }
+    .cover-meta {
+      margin-top: 40px;
+    }
+    .cover-meta table {
+      margin: 0 auto;
+      border-collapse: collapse;
+      font-size: 11pt;
+    }
+    .cover-meta td {
+      padding: 6px 16px;
+      text-align: left;
+      border: none;
+    }
+    .cover-meta td:first-child {
+      font-weight: 600;
+      color: #0f5241;
+      text-align: right;
+      padding-right: 12px;
+    }
+    .cover-footer {
+      margin-top: 80px;
+      font-size: 9pt;
+      color: #888;
+    }
+
+    /* ── HEADINGS ───────────────────────────────────── */
+    h1 {
+      font-size: 18pt;
+      font-weight: 700;
+      color: #0a3d2b;
+      border-bottom: 2px solid #0f5241;
+      padding-bottom: 6px;
+      margin-top: 32px;
+      margin-bottom: 14px;
+      page-break-after: avoid;
+    }
+    h2 {
+      font-size: 14pt;
+      font-weight: 700;
+      color: #0f5241;
+      margin-top: 24px;
+      margin-bottom: 10px;
+      page-break-after: avoid;
+    }
+    h3 {
+      font-size: 12pt;
+      font-weight: 700;
+      color: #145a4a;
+      margin-top: 18px;
+      margin-bottom: 8px;
+      page-break-after: avoid;
+    }
+
+    /* ── TABLES ─────────────────────────────────────── */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 14px 0 20px;
+      font-size: 10pt;
+      page-break-inside: auto;
+    }
+    thead tr {
+      background-color: #0f5241;
+      color: white;
+    }
+    thead th {
+      padding: 9px 12px;
+      text-align: left;
+      font-weight: 600;
+      font-size: 10pt;
+      border: 1px solid #0a3d2b;
+    }
+    tbody tr:nth-child(even) {
+      background-color: #f0f7f4;
+    }
+    tbody tr:nth-child(odd) {
+      background-color: #ffffff;
+    }
+    tbody td {
+      padding: 8px 12px;
+      border: 1px solid #c8ddd8;
+      vertical-align: top;
+    }
+    td code, td .mono {
+      font-family: Consolas, "Courier New", monospace;
+      font-size: 9.5pt;
+      color: #0f5241;
+      background: #eaf4f0;
+      padding: 1px 5px;
+      border-radius: 3px;
+    }
+
+    /* ── COVER META TABLE ───────────────────────────── */
+    .meta-table {
+      width: auto;
+      border-collapse: collapse;
+      margin: 10px 0 20px;
+    }
+    .meta-table td {
+      padding: 5px 14px 5px 0;
+      border: none;
+      font-size: 11pt;
+    }
+    .meta-table td:first-child {
+      font-weight: 600;
+      color: #0f5241;
+      white-space: nowrap;
+      padding-right: 20px;
+    }
+
+    /* ── BADGES / PILLS ─────────────────────────────── */
+    .badge {
+      display: inline-block;
+      padding: 2px 9px;
+      border-radius: 12px;
+      font-size: 8.5pt;
+      font-weight: 700;
+    }
+    .badge-pk   { background: #0f5241; color: white; }
+    .badge-fk   { background: #d97706; color: white; }
+    .badge-uk   { background: #2563eb; color: white; }
+    .badge-nn   { background: #dc2626; color: white; }
+
+    /* ── INFO BOXES ─────────────────────────────────── */
+    .info-box {
+      background: #eaf4f0;
+      border-left: 4px solid #0f5241;
+      padding: 10px 16px;
+      margin: 14px 0;
+      border-radius: 0 6px 6px 0;
+      font-size: 10.5pt;
+    }
+    .note-box {
+      background: #fff8e1;
+      border-left: 4px solid #d97706;
+      padding: 10px 16px;
+      margin: 14px 0;
+      border-radius: 0 6px 6px 0;
+      font-size: 10.5pt;
+    }
+
+    /* ── TOC ────────────────────────────────────────── */
+    .toc {
+      background: #f7faf8;
+      border: 1px solid #c8ddd8;
+      border-radius: 6px;
+      padding: 20px 28px;
+      margin: 20px 0 30px;
+    }
+    .toc-title {
+      font-size: 13pt;
+      font-weight: 700;
+      color: #0a3d2b;
+      margin-bottom: 14px;
+    }
+    .toc ol {
+      margin: 0;
+      padding-left: 22px;
+    }
+    .toc li {
+      margin: 5px 0;
+      font-size: 11pt;
+      color: #0f5241;
+    }
+    .toc li a {
+      color: #0f5241;
+      text-decoration: none;
+    }
+    .toc ol ol {
+      padding-left: 20px;
+    }
+    .toc ol ol li {
+      font-size: 10pt;
+      margin: 3px 0;
+      color: #145a4a;
+    }
+
+    /* ── PAGE BREAKS ────────────────────────────────── */
+    .page-break { page-break-before: always; }
+
+    /* ── MISC ───────────────────────────────────────── */
+    p { margin: 6px 0 10px; }
+    ul, ol { margin: 8px 0; padding-left: 22px; }
+    li { margin: 4px 0; }
+    .section-intro {
+      color: #3a5a50;
+      font-size: 10.5pt;
+      margin-bottom: 14px;
+      font-style: italic;
+    }
+    .relationship-label {
+      font-weight: 700;
+      color: #0f5241;
+    }
+    .footer-note {
+      text-align: center;
+      font-size: 9pt;
+      color: #888;
+      margin-top: 60px;
+      border-top: 1px solid #e0ece8;
+      padding-top: 12px;
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════════════
+     COVER PAGE
+══════════════════════════════════════════════════ -->
+<div class="cover-page">
+  <div style="font-size:64px; margin-bottom:16px;">&#9829;</div>
+  <div class="cover-title">CareConnect</div>
+  <div class="cover-subtitle">Database Design Document</div>
+  <hr class="cover-divider">
+
+  <table class="cover-meta" style="margin:0 auto; width:auto; border:none;">
+    <tr>
+      <td style="font-weight:600; color:#0f5241; border:none; text-align:right; padding-right:16px;">Project</td>
+      <td style="border:none;">CareConnect — Professional Nurse Hiring &amp; Healthcare Staffing Platform</td>
+    </tr>
+    <tr>
+      <td style="font-weight:600; color:#0f5241; border:none; text-align:right; padding-right:16px;">Document Type</td>
+      <td style="border:none;">Database Design Document</td>
+    </tr>
+    <tr>
+      <td style="font-weight:600; color:#0f5241; border:none; text-align:right; padding-right:16px;">Database</td>
+      <td style="border:none;">MySQL 8.0</td>
+    </tr>
+    <tr>
+      <td style="font-weight:600; color:#0f5241; border:none; text-align:right; padding-right:16px;">Backend</td>
+      <td style="border:none;">Spring Boot 3.2.3 &nbsp;|&nbsp; Spring Data JPA &nbsp;|&nbsp; Hibernate</td>
+    </tr>
+    <tr>
+      <td style="font-weight:600; color:#0f5241; border:none; text-align:right; padding-right:16px;">Prepared By</td>
+      <td style="border:none;">Prakhar</td>
+    </tr>
+    <tr>
+      <td style="font-weight:600; color:#0f5241; border:none; text-align:right; padding-right:16px;">Version</td>
+      <td style="border:none;">1.0</td>
+    </tr>
+    <tr>
+      <td style="font-weight:600; color:#0f5241; border:none; text-align:right; padding-right:16px;">Date</td>
+      <td style="border:none;">April 2026</td>
+    </tr>
+  </table>
+
+  <div class="cover-footer">
+    Internship Project &nbsp;|&nbsp; SRS 2026 &nbsp;|&nbsp; CareConnect
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════════
+     TABLE OF CONTENTS
+══════════════════════════════════════════════════ -->
+<div class="toc">
+  <div class="toc-title">Table of Contents</div>
+  <ol>
+    <li>Project Overview</li>
+    <li>Technology Stack</li>
+    <li>Database Design Goals</li>
+    <li>Database Schema Overview</li>
+    <li>Table Descriptions
+      <ol>
+        <li>users</li>
+        <li>patient_profiles</li>
+        <li>nurse_profiles</li>
+        <li>organizations</li>
+        <li>jobs</li>
+        <li>appointments</li>
+        <li>medical_records</li>
+        <li>nurse_applications</li>
+        <li>compliance_records</li>
+        <li>credentials</li>
+        <li>payments</li>
+      </ol>
+    </li>
+    <li>Entity Relationship Diagram</li>
+    <li>Relationships &amp; Cardinality</li>
+    <li>Indexes &amp; Performance</li>
+    <li>Enumerations</li>
+    <li>Design Decisions &amp; Rationale</li>
+  </ol>
+</div>
+
+
+<!-- ══════════════════════════════════════════════════
+     SECTION 1 — PROJECT OVERVIEW
+══════════════════════════════════════════════════ -->
+<h1>1. Project Overview</h1>
+<p>
+  CareConnect is a comprehensive healthcare staffing platform that connects three types of users —
+  <strong>Patients</strong>, <strong>Nurses</strong>, and <strong>Organizations</strong> (hospitals,
+  clinics, nursing homes). The platform facilitates nurse hiring, appointment booking, credential
+  verification, compliance tracking, and payment management.
+</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>User Role</th>
+      <th>Description</th>
+      <th>Key Activities</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>Patient</strong></td>
+      <td>Individuals requiring home healthcare or medical assistance</td>
+      <td>Book nurses, manage appointments, upload medical records</td>
+    </tr>
+    <tr>
+      <td><strong>Nurse</strong></td>
+      <td>Certified healthcare professionals seeking employment</td>
+      <td>Browse jobs, apply, manage credentials, receive payments</td>
+    </tr>
+    <tr>
+      <td><strong>Organization</strong></td>
+      <td>Hospitals, clinics, nursing homes, care centers</td>
+      <td>Post jobs, review applications, manage compliance and credentialing</td>
+    </tr>
+  </tbody>
+</table>
+
+
+<!-- ══════════════════════════════════════════════════
+     SECTION 2 — TECHNOLOGY STACK
+══════════════════════════════════════════════════ -->
+<h1>2. Technology Stack</h1>
+
+<table>
+  <thead>
+    <tr><th>Component</th><th>Technology</th><th>Version</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>Backend Framework</td><td>Spring Boot</td><td>3.2.3</td></tr>
+    <tr><td>ORM</td><td>Spring Data JPA / Hibernate</td><td>6.4.x</td></tr>
+    <tr><td>Database</td><td>MySQL</td><td>8.0</td></tr>
+    <tr><td>Security</td><td>Spring Security + JWT (JJWT)</td><td>0.12.3</td></tr>
+    <tr><td>Build Tool</td><td>Apache Maven</td><td>3.9.6</td></tr>
+    <tr><td>Java Version</td><td>Java SE</td><td>17 / 23</td></tr>
+    <tr><td>Frontend</td><td>Angular + Bootstrap 5</td><td>16.2 / 5.3</td></tr>
+  </tbody>
+</table>
+
+
+<!-- ══════════════════════════════════════════════════
+     SECTION 3 — DESIGN GOALS
+══════════════════════════════════════════════════ -->
+<h1>3. Database Design Goals</h1>
+<ol>
+  <li><strong>Role Separation</strong> — A single <code>users</code> table handles authentication for all three roles. Each role has a dedicated profile table linked via a 1:1 relationship. This avoids null columns and keeps the auth table clean.</li>
+  <li><strong>Data Integrity</strong> — Foreign key constraints with appropriate CASCADE and SET NULL rules ensure referential integrity across all 11 tables.</li>
+  <li><strong>No Redundancy (3NF)</strong> — Common fields (email, password, role) are stored only in <code>users</code>. Role-specific fields live in their respective profile tables.</li>
+  <li><strong>Scalability</strong> — Strategic indexes on frequently queried columns (status, foreign keys, expiry dates) ensure query performance as data grows.</li>
+  <li><strong>Audit Trail</strong> — All major tables include <code>created_at</code> and where applicable <code>updated_at</code> timestamps for auditability and compliance.</li>
+  <li><strong>Financial Accuracy</strong> — All monetary columns use <code>DECIMAL(10,2)</code> instead of FLOAT to avoid floating-point precision errors.</li>
+</ol>
+
+
+<!-- ══════════════════════════════════════════════════
+     SECTION 4 — SCHEMA OVERVIEW
+══════════════════════════════════════════════════ -->
+<h1>4. Database Schema Overview</h1>
+<p>The database <strong>careconnect_db</strong> contains <strong>11 tables</strong> organized into four functional groups:</p>
+
+<table>
+  <thead>
+    <tr><th>Group</th><th>Tables</th><th>Purpose</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>Authentication</strong></td>
+      <td>users</td>
+      <td>Central login table for all user roles</td>
+    </tr>
+    <tr>
+      <td><strong>User Profiles</strong></td>
+      <td>patient_profiles, nurse_profiles, organizations</td>
+      <td>Role-specific personal and professional details</td>
+    </tr>
+    <tr>
+      <td><strong>Core Operations</strong></td>
+      <td>jobs, appointments, medical_records, nurse_applications</td>
+      <td>Primary business flows of the platform</td>
+    </tr>
+    <tr>
+      <td><strong>Management</strong></td>
+      <td>compliance_records, credentials, payments</td>
+      <td>Organizational management and financial records</td>
+    </tr>
+  </tbody>
+</table>
+
+
+<!-- ══════════════════════════════════════════════════
+     SECTION 5 — TABLE DESCRIPTIONS
+══════════════════════════════════════════════════ -->
+<h1>5. Table Descriptions</h1>
+
+<!-- 5.1 users -->
+<h2>5.1 &nbsp; <code>users</code></h2>
+<p class="section-intro">
+  Central authentication table shared by all three user roles. Stores only login credentials and role
+  information. All profile data resides in separate tables to maintain clean separation of concerns.
+</p>
+<table>
+  <thead>
+    <tr><th>Column</th><th>Data Type</th><th>Constraint</th><th>Description</th></tr>
+  </thead>
+  <tbody>
+    <tr><td><code>id</code></td><td>BIGINT</td><td><span class="badge badge-pk">PK</span> AUTO_INCREMENT</td><td>Unique user identifier</td></tr>
+    <tr><td><code>email</code></td><td>VARCHAR(255)</td><td><span class="badge badge-uk">UNIQUE</span> <span class="badge badge-nn">NOT NULL</span></td><td>Login email — unique across all roles</td></tr>
+    <tr><td><code>password</code></td><td>VARCHAR(255)</td><td><span class="badge badge-nn">NOT NULL</span></td><td>BCrypt-hashed password</td></tr>
+    <tr><td><code>role</code></td><td>ENUM</td><td><span class="badge badge-nn">NOT NULL</span></td><td>PATIENT / NURSE / ORGANIZATION</td></tr>
+    <tr><td><code>is_active</code></td><td>BOOLEAN</td><td>DEFAULT TRUE</td><td>Account active / suspended flag</td></tr>
+    <tr><td><code>created_at</code></td><td>DATETIME</td><td>AUTO</td><td>Account creation timestamp</td></tr>
+    <tr><td><code>updated_at</code></td><td>DATETIME</td><td>AUTO</td><td>Last modification timestamp</td></tr>
+  </tbody>
+</table>
+
+<!-- 5.2 patient_profiles -->
+<h2>5.2 &nbsp; <code>patient_profiles</code></h2>
+<p class="section-intro">
+  Stores personal, health, and emergency contact information for patients.
+  Linked 1:1 with the <code>users</code> table.
+</p>
+<table>
+  <thead>
+    <tr><th>Column</th><th>Data Type</th><th>Constraint</th><th>Description</th></tr>
+  </thead>
+  <tbody>
+    <tr><td><code>id</code></td><td>BIGINT</td><td><span class="badge badge-pk">PK</span></td><td>Profile identifier</td></tr>
+    <tr><td><code>user_id</code></td><td>BIGINT</td><td><span class="badge badge-fk">FK</span> → users UNIQUE</td><td>Links to authentication record</td></tr>
+    <tr><td><code>full_name</code></td><td>VARCHAR(255)</td><td><span class="badge badge-nn">NOT NULL</span></td><td>Patient full name</td></tr>
+    <tr><td><code>date_of_birth</code></td><td>DATE</td><td></td><td>Date of birth</td></tr>
+    <tr><td><code>blood_group</code></td><td>VARCHAR(10)</td><td></td><td>Blood group (A+, O-, etc.)</td></tr>
+    <tr><td><code>phone</code></td><td>VARCHAR(20)</td><td></td><td>Primary contact phone number</td></tr>
+    <tr><td><code>address</code></td><td>TEXT</td><td></td><td>Home / residential address</td></tr>
+    <tr><td><code>city</code></td><td>VARCHAR(100)</td><td></td><td>City of residence</td></tr>
+    <tr><td><code>state</code></td><td>VARCHAR(100)</td><td></td><td>State of residence</td></tr>
+    <tr><td><code>emergency_contact</code></td><td>VARCHAR(255)</td><td></td><td>Emergency contact person name</td></tr>
+    <tr><td><code>emergency_contact_phone</code></td><td>VARCHAR(20)</td><td></td><td>Emergency contact phone</td></tr>
+    <tr><td><code>medical_history</code></td><td>TEXT</td><td></td><td>Previous conditions and surgeries</td></tr>
+    <tr><td><code>allergies</code></td><td>TEXT</td><td></td><td>Known allergies</td></tr>
+    <tr><td><code>current_medications</code></td><td>TEXT</td><td></td><td>Currently prescribed medications</td></tr>
+  </tbody>
+</table>
+
+<!-- 5.3 nurse_profiles -->
+<h2>5.3 &nbsp; <code>nurse_profiles</code></h2>
+<p class="section-intro">
+  Stores professional details of nurses including licensing, specialization, experience, and availability.
+</p>
+<table>
+  <thead>
+    <tr><th>Column</th><th>Data Type</th><th>Constraint</th><th>Description</th></tr>
+  </thead>
+  <tbody>
+    <tr><td><code>id</code></td><td>BIGINT</td><td><span class="badge badge-pk">PK</span></td><td>Profile identifier</td></tr>
+    <tr><td><code>user_id</code></td><td>BIGINT</td><td><span class="badge badge-fk">FK</span> → users UNIQUE</td><td>Links to authentication record</td></tr>
+    <tr><td><code>full_name</code></td><td>VARCHAR(255)</td><td><span class="badge badge-nn">NOT NULL</span></td><td>Nurse full name</td></tr>
+    <tr><td><code>license_number</code></td><td>VARCHAR(255)</td><td><span class="badge badge-uk">UNIQUE</span></td><td>Nursing license / registration number</td></tr>
+    <tr><td><code>phone</code></td><td>VARCHAR(20)</td><td></td><td>Contact phone number</td></tr>
+    <tr><td><code>specialization</code></td><td>VARCHAR(255)</td><td></td><td>Primary specialization (ICU, Pediatric, etc.)</td></tr>
+    <tr><td><code>education</code></td><td>VARCHAR(255)</td><td></td><td>Educational qualification</td></tr>
+    <tr><td><code>experience_years</code></td><td>INT</td><td></td><td>Total years of nursing experience</td></tr>
+    <tr><td><code>expertise</code></td><td>VARCHAR(1000)</td><td></td><td>Areas of clinical expertise</td></tr>
+    <tr><td><code>previous_employment</code></td><td>TEXT</td><td></td><td>Prior work history</td></tr>
+    <tr><td><code>professional_references</code></td><td>TEXT</td><td></td><td>Professional references from employers</td></tr>
+    <tr><td><code>availability</code></td><td>VARCHAR(100)</td><td></td><td>Full-Time / Part-Time / On-Call</td></tr>
+    <tr><td><code>rating</code></td><td>DOUBLE</td><td></td><td>Average rating (1.0 – 5.0)</td></tr>
+    <tr><td><code>profile_status</code></td><td>VARCHAR(100)</td><td></td><td>Active / Under Review / Suspended</td></tr>
+  </tbody>
+</table>
+
+<!-- 5.4 organizations -->
+<h2>5.4 &nbsp; <code>organizations</code></h2>
+<p class="section-intro">
+  Stores details of healthcare facilities (hospitals, clinics, nursing homes, care centers)
+  that post jobs and manage nursing staff.
+</p>
+<table>
+  <thead>
+    <tr><th>Column</th><th>Data Type</th><th>Constraint</th><th>Description</th></tr>
+  </thead>
+  <tbody>
+    <tr><td><code>id</code></td><td>BIGINT</td><td><span class="badge badge-pk">PK</span></td><td>Organization identifier</td></tr>
+    <tr><td><code>user_id</code></td><td>BIGINT</td><td><span class="badge badge-fk">FK</span> → users UNIQUE</td><td>Links to authentication record</td></tr>
+    <tr><td><code>org_name</code></td><td>VARCHAR(255)</td><td><span class="badge badge-nn">NOT NULL</span></td><td>Official organization name</td></tr>
+    <tr><td><code>org_type</code></td><td>VARCHAR(100)</td><td></td><td>Hospital / Clinic / Nursing Home / etc.</td></tr>
+    <tr><td><code>reg_number</code></td><td>VARCHAR(255)</td><td><span class="badge badge-uk">UNIQUE</span></td><td>Government registration number</td></tr>
+    <tr><td><code>contact_person</code></td><td>VARCHAR(255)</td><td></td><td>Primary contact person name</td></tr>
+    <tr><td><code>designation</code></td><td>VARCHAR(255)</td><td></td><td>Contact person's job title / designation</td></tr>
+    <tr><td><code>phone</code></td><td>VARCHAR(20)</td><td></td><td>Primary contact phone</td></tr>
+    <tr><td><code>address</code></td><td>TEXT</td><td></td><td>Registered street address</td></tr>
+    <tr><td><code>city</code></td><td>VARCHAR(100)</td><td></td><td>City</td></tr>
+    <tr><td><code>state</code></td><td>VARCHAR(100)</td><td></td><td>State</td></tr>
+    <tr><td><code>pincode</code></td><td>VARCHAR(10)</td><td></td><td>Postal / ZIP code</td></tr>
+    <tr><td><code>website</code></td><td>VARCHAR(255)</td><td></td><td>Official website URL</td></tr>
+    <tr><td><code>status</code></td><td>VARCHAR(50)</td><td>DEFAULT 'ACTIVE'</td><td>Account status (ACTIVE / SUSPENDED)</td></tr>
+    <tr><td><code>created_at</code></td><td>DATETIME</td><td>AUTO</td><td>Registration timestamp</td></tr>
+  </tbody>
+</table>
+
+<!-- 5.5 jobs -->
+<h2>5.5 &nbsp; <code>jobs</code></h2>
+<p class="section-intro">
+  Job listings posted by organizations. Nurses browse and apply for these openings.
+</p>
+<table>
+  <thead>
+    <tr><th>Column</th><th>Data Type</th><th>Constraint</th><th>Description</th></tr>
+  </thead>
+  <tbody>
+    <tr><td><code>id</code></td><td>BIGINT</td><td><span class="badge badge-pk">PK</span></td><td>Job identifier</td></tr>
+    <tr><td><code>organization_id</code></td><td>BIGINT</td><td><span class="badge badge-fk">FK</span> → organizations</td><td>Organization that posted the job</td></tr>
+    <tr><td><code>job_title</code></td><td>VARCHAR(255)</td><td><span class="badge badge-nn">NOT NULL</span></td><td>Job title (e.g. ICU Nurse)</td></tr>
+    <tr><td><code>department</code></td><td>VARCHAR(255)</td><td></td><td>Hospital department</td></tr>
+    <tr><td><code>location</code></td><td>VARCHAR(255)</td><td></td><td>Job location / city</td></tr>
+    <tr><td><code>job_type</code></td><td>ENUM</td><td></td><td>TEMPORARY / PERMANENT / EMERGENCY / CONTRACT</td></tr>
+    <tr><td><code>specialization</code></td><td>VARCHAR(255)</td><td></td><td>Required nurse specialization</td></tr>
+    <tr><td><code>salary_min</code></td><td>DECIMAL(10,2)</td><td></td><td>Minimum offered salary</td></tr>
+    <tr><td><code>salary_max</code></td><td>DECIMAL(10,2)</td><td></td><td>Maximum offered salary</td></tr>
+    <tr><td><code>shift_details</code></td><td>VARCHAR(255)</td><td></td><td>Shift timing and duration</td></tr>
+    <tr><td><code>patient_acuity</code></td><td>VARCHAR(255)</td><td></td><td>Care complexity level required</td></tr>
+    <tr><td><code>description</code></td><td>TEXT</td><td></td><td>Full job description and requirements</td></tr>
+    <tr><td><code>priority</code></td><td>VARCHAR(50)</td><td>DEFAULT 'Normal'</td><td>Normal / High / Urgent</td></tr>
+    <tr><td><code>deadline</code></td><td>DATE</td><td></td><td>Application closing date</td></tr>
+    <tr><td><code>status</code></td><td>ENUM</td><td>DEFAULT 'ACTIVE'</td><td>ACTIVE / CLOSED / DRAFT</td></tr>
+    <tr><td><code>created_at</code></td><td>DATETIME</td><td>AUTO</td><td>Posting timestamp</td></tr>
+  </tbody>
+</table>
+
+<!-- 5.6 appointments -->
+<h2>5.6 &nbsp; <code>appointments</code></h2>
+<p class="section-intro">
+  Records appointments booked by patients. A nurse may be assigned immediately at booking
+  or matched later by the platform.
+</p>
+<div class="note-box">
+  <strong>Note:</strong> <code>nurse_id</code> is nullable — a patient can submit an appointment
+  request specifying care needs, and a nurse is assigned later. This supports both direct
+  booking and demand-based matching workflows.
+</div>
+<table>
+  <thead>
+    <tr><th>Column</th><th>Data Type</th><th>Constraint</th><th>Description</th></tr>
+  </thead>
+  <tbody>
+    <tr><td><code>id</code></td><td>BIGINT</td><td><span class="badge badge-pk">PK</span></td><td>Appointment identifier</td></tr>
+    <tr><td><code>patient_id</code></td><td>BIGINT</td><td><span class="badge badge-fk">FK</span> → patient_profiles</td><td>Patient who booked</td></tr>
+    <tr><td><code>nurse_id</code></td><td>BIGINT</td><td><span class="badge badge-fk">FK</span> → nurse_profiles NULLABLE</td><td>Assigned nurse (set after matching)</td></tr>
+    <tr><td><code>appointment_date</code></td><td>DATETIME</td><td><span class="badge badge-nn">NOT NULL</span></td><td>Scheduled start date and time</td></tr>
+    <tr><td><code>end_date</code></td><td>DATETIME</td><td></td><td>Scheduled end date and time</td></tr>
+    <tr><td><code>care_needs</code></td><td>VARCHAR(255)</td><td></td><td>Type of care required</td></tr>
+    <tr><td><code>required_skills</code></td><td>VARCHAR(255)</td><td></td><td>Specific nursing skills needed</td></tr>
+    <tr><td><code>duration</code></td><td>VARCHAR(100)</td><td></td><td>Estimated care duration (e.g. "2 hours")</td></tr>
+    <tr><td><code>notes</code></td><td>TEXT</td><td></td><td>Additional instructions or notes</td></tr>
+    <tr><td><code>status</code></td><td>ENUM</td><td>DEFAULT 'PENDING'</td><td>PENDING / CONFIRMED / IN_PROGRESS / COMPLETED / CANCELLED</td></tr>
+    <tr><td><code>created_at</code></td><td>DATETIME</td><td>AUTO</td><td>Booking creation timestamp</td></tr>
+  </tbody>
+</table>
+
+<!-- 5.7 medical_records -->
+<h2>5.7 &nbsp; <code>medical_records</code></h2>
+<p class="section-intro">
+  Stores uploaded health documents for patients. Records can be uploaded by the patient
+  themselves or by an authorized nurse during a visit.
+</p>
+<table>
+  <thead>
+    <tr><th>Column</th><th>Data Type</th><th>Constraint</th><th>Description</th></tr>
+  </thead>
+  <tbody>
+    <tr><td><code>id</code></td><td>BIGINT</td><td><span class="badge badge-pk">PK</span></td><td>Record identifier</td></tr>
+    <tr><td><code>patient_id</code></td><td>BIGINT</td><td><span class="badge badge-fk">FK</span> → patient_profiles</td><td>Patient who owns the record</td></tr>
+    <tr><td><code>uploaded_by</code></td><td>BIGINT</td><td><span class="badge badge-fk">FK</span> → users NULLABLE</td><td>User who uploaded (patient or nurse)</td></tr>
+    <tr><td><code>record_type</code></td><td>VARCHAR(100)</td><td><span class="badge badge-nn">NOT NULL</span></td><td>Lab Report / Prescription / X-Ray / Discharge / Other</td></tr>
+    <tr><td><code>title</code></td><td>VARCHAR(255)</td><td></td><td>Document title</td></tr>
+    <tr><td><code>description</code></td><td>TEXT</td><td></td><td>Description or clinical notes</td></tr>
+    <tr><td><code>file_url</code></td><td>VARCHAR(500)</td><td></td><td>File path or cloud storage URL</td></tr>
+    <tr><td><code>file_name</code></td><td>VARCHAR(255)</td><td></td><td>Original uploaded file name</td></tr>
+    <tr><td><code>created_at</code></td><td>DATETIME</td><td>AUTO</td><td>Upload timestamp</td></tr>
+  </tbody>
+</table>
+
+<!-- 5.8 nurse_applications -->
+<h2>5.8 &nbsp; <code>nurse_applications</code></h2>
+<p class="section-intro">
+  Tracks nurse job applications. A composite unique constraint at the database level prevents
+  duplicate applications.
+</p>
+<div class="info-box">
+  <strong>Unique Constraint:</strong> <code>(nurse_id, job_id)</code> — Prevents a nurse from
+  submitting more than one application to the same job posting.
+</div>
+<table>
+  <thead>
+    <tr><th>Column</th><th>Data Type</th><th>Constraint</th><th>Description</th></tr>
+  </thead>
+  <tbody>
+    <tr><td><code>id</code></td><td>BIGINT</td><td><span class="badge badge-pk">PK</span></td><td>Application identifier</td></tr>
+    <tr><td><code>nurse_id</code></td><td>BIGINT</td><td><span class="badge badge-fk">FK</span> → nurse_profiles</td><td>Applying nurse</td></tr>
+    <tr><td><code>job_id</code></td><td>BIGINT</td><td><span class="badge badge-fk">FK</span> → jobs</td><td>Target job posting</td></tr>
+    <tr><td><code>cover_note</code></td><td>TEXT</td><td></td><td>Nurse's covering note / letter</td></tr>
+    <tr><td><code>status</code></td><td>ENUM</td><td>DEFAULT 'PENDING'</td><td>PENDING / APPROVED / REJECTED</td></tr>
+    <tr><td><code>applied_at</code></td><td>DATETIME</td><td>AUTO</td><td>Application submission timestamp</td></tr>
+  </tbody>
+</table>
+
+<!-- 5.9 compliance_records -->
+<h2>5.9 &nbsp; <code>compliance_records</code></h2>
+<p class="section-intro">
+  Organizations track regulatory and policy compliance requirements for their nursing staff,
+  including due dates and current compliance status.
+</p>
+<table>
+  <thead>
+    <tr><th>Column</th><th>Data Type</th><th>Constraint</th><th>Description</th></tr>
+  </thead>
+  <tbody>
+    <tr><td><code>id</code></td><td>BIGINT</td><td><span class="badge badge-pk">PK</span></td><td>Record identifier</td></tr>
+    <tr><td><code>organization_id</code></td><td>BIGINT</td><td><span class="badge badge-fk">FK</span> → organizations</td><td>Organization tracking this compliance item</td></tr>
+    <tr><td><code>nurse_name</code></td><td>VARCHAR(255)</td><td></td><td>Nurse this record applies to</td></tr>
+    <tr><td><code>requirement</code></td><td>VARCHAR(255)</td><td></td><td>Compliance requirement description</td></tr>
+    <tr><td><code>due_date</code></td><td>DATE</td><td></td><td>Deadline for achieving compliance</td></tr>
+    <tr><td><code>notes</code></td><td>TEXT</td><td></td><td>Additional notes or remarks</td></tr>
+    <tr><td><code>status</code></td><td>ENUM</td><td>DEFAULT 'PENDING'</td><td>COMPLIANT / PENDING / NON_COMPLIANT</td></tr>
+    <tr><td><code>created_at</code></td><td>DATETIME</td><td>AUTO</td><td>Record creation timestamp</td></tr>
+  </tbody>
+</table>
+
+<!-- 5.10 credentials -->
+<h2>5.10 &nbsp; <code>credentials</code></h2>
+<p class="section-intro">
+  Stores nurse professional credentials such as nursing licenses, CPR certifications, and
+  specialty certificates. Expiry date is indexed to enable timely renewal reminders.
+</p>
+<table>
+  <thead>
+    <tr><th>Column</th><th>Data Type</th><th>Constraint</th><th>Description</th></tr>
+  </thead>
+  <tbody>
+    <tr><td><code>id</code></td><td>BIGINT</td><td><span class="badge badge-pk">PK</span></td><td>Credential identifier</td></tr>
+    <tr><td><code>nurse_id</code></td><td>BIGINT</td><td><span class="badge badge-fk">FK</span> → nurse_profiles</td><td>Credential holder</td></tr>
+    <tr><td><code>credential_type</code></td><td>VARCHAR(255)</td><td><span class="badge badge-nn">NOT NULL</span></td><td>Nursing License / BLS / ACLS / Specialty Cert.</td></tr>
+    <tr><td><code>issued_by</code></td><td>VARCHAR(255)</td><td></td><td>Issuing authority (e.g. Indian Nursing Council)</td></tr>
+    <tr><td><code>issued_date</code></td><td>DATE</td><td></td><td>Date of issue</td></tr>
+    <tr><td><code>expiry_date</code></td><td>DATE</td><td>INDEXED</td><td>Expiry date — used for renewal alert queries</td></tr>
+    <tr><td><code>document_url</code></td><td>VARCHAR(500)</td><td></td><td>Uploaded credential document URL</td></tr>
+    <tr><td><code>status</code></td><td>ENUM</td><td>DEFAULT 'PENDING'</td><td>VERIFIED / PENDING / EXPIRED</td></tr>
+    <tr><td><code>created_at</code></td><td>DATETIME</td><td>AUTO</td><td>Record creation timestamp</td></tr>
+  </tbody>
+</table>
+
+<!-- 5.11 payments -->
+<h2>5.11 &nbsp; <code>payments</code></h2>
+<p class="section-intro">
+  Records payment transactions made to nurses for their services. Supports multiple payment
+  structures (hourly, per diem, salary) and tracks tax deductions.
+</p>
+<table>
+  <thead>
+    <tr><th>Column</th><th>Data Type</th><th>Constraint</th><th>Description</th></tr>
+  </thead>
+  <tbody>
+    <tr><td><code>id</code></td><td>BIGINT</td><td><span class="badge badge-pk">PK</span></td><td>Payment identifier</td></tr>
+    <tr><td><code>nurse_id</code></td><td>BIGINT</td><td><span class="badge badge-fk">FK</span> → nurse_profiles</td><td>Payee nurse</td></tr>
+    <tr><td><code>appointment_id</code></td><td>BIGINT</td><td><span class="badge badge-fk">FK</span> → appointments NULLABLE</td><td>Related appointment (if applicable)</td></tr>
+    <tr><td><code>amount</code></td><td>DECIMAL(10,2)</td><td><span class="badge badge-nn">NOT NULL</span></td><td>Gross payment amount</td></tr>
+    <tr><td><code>payment_method</code></td><td>VARCHAR(100)</td><td></td><td>Bank Transfer / UPI / Cheque</td></tr>
+    <tr><td><code>payment_structure</code></td><td>VARCHAR(100)</td><td></td><td>Hourly / Per Diem / Salary</td></tr>
+    <tr><td><code>hours_worked</code></td><td>DECIMAL(5,2)</td><td></td><td>Number of hours worked in this period</td></tr>
+    <tr><td><code>tax_deduction</code></td><td>DECIMAL(10,2)</td><td></td><td>TDS or other applicable deductions</td></tr>
+    <tr><td><code>description</code></td><td>TEXT</td><td></td><td>Payment description or remarks</td></tr>
+    <tr><td><code>status</code></td><td>ENUM</td><td>DEFAULT 'PENDING'</td><td>PENDING / PROCESSED / FAILED / REFUNDED</td></tr>
+    <tr><td><code>payment_date</code></td><td>DATETIME</td><td>AUTO</td><td>Transaction timestamp</td></tr>
+  </tbody>
+</table>
+
+
+<!-- ══════════════════════════════════════════════════
+     SECTION 6 — ERD  (text-based)
+══════════════════════════════════════════════════ -->
+<div class="page-break"></div>
+<h1>6. Entity Relationship Diagram</h1>
+<p>
+  The diagram below shows all 11 entities and their relationships.
+  Arrows represent foreign key associations; cardinality is shown at each end.
+</p>
+
+<div style="background:#f7faf8; border:1px solid #c8ddd8; border-radius:6px; padding:20px; font-family:Consolas,'Courier New',monospace; font-size:9pt; line-height:1.8; overflow-x:auto;">
+<pre style="margin:0; white-space:pre;">
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                                  users                                       │
+│  PK id │ email (UK) │ password │ role: PATIENT|NURSE|ORGANIZATION │ is_active│
+└───────────────┬────────────────────┬────────────────────┬────────────────────┘
+                │ 1:1                │ 1:1                │ 1:1
+                ▼                   ▼                    ▼
+   ┌──────────────────┐  ┌──────────────────┐  ┌───────────────────────┐
+   │ patient_profiles │  │  nurse_profiles  │  │     organizations     │
+   │  PK id           │  │  PK id           │  │  PK id                │
+   │  FK user_id      │  │  FK user_id      │  │  FK user_id           │
+   │  full_name       │  │  full_name       │  │  org_name             │
+   │  date_of_birth   │  │  license_number  │  │  org_type             │
+   │  blood_group     │  │  specialization  │  │  reg_number           │
+   │  phone / address │  │  experience_yrs  │  │  contact_person       │
+   │  medical_history │  │  availability    │  │  designation          │
+   │  allergies       │  │  rating          │  │  city/state/pincode   │
+   └────────┬─────────┘  └──────┬───────────┘  └──────────┬────────────┘
+            │                   │                          │
+      ┌─────┤ 1:N         1:N ├─┤ 1:N               1:N ├─┤ 1:N
+      │     │                  │                          │
+      │     ▼                  ▼                          ▼
+      │  ┌──────────────┐  ┌────────────────┐  ┌──────────────────┐
+      │  │ appointments │  │  credentials   │  │      jobs        │
+      │  │  PK id       │  │  PK id         │  │  PK id           │
+      │  │  FK patient ─┘  │  FK nurse_id ──┘  │  FK org_id ──────┘
+      │  │  FK nurse_id─┐  │  credential_type  │  job_title       │
+      │  │  appt_date   │  │  issued_by        │  job_type        │
+      │  │  care_needs  │  │  expiry_date      │  salary_min/max  │
+      │  │  duration    │  │  status           │  deadline/status │
+      │  │  status      │  └────────────────┘  └──────┬───────────┘
+      │  └──────┬───────┘                              │
+      │         │ 1:N                            1:N ──┤
+      │         ▼                                      ▼
+      │  ┌──────────────┐                  ┌───────────────────────┐
+      │  │   payments   │                  │   nurse_applications  │
+      │  │  PK id       │                  │  PK id                │
+      │  │  FK nurse_id │                  │  FK nurse_id ─────────┤ ← nurse_profiles
+      │  │  FK appt_id ─┘                  │  FK job_id ───────────┘ ← jobs
+      │  │  amount      │                  │  cover_note           │
+      │  │  pay_method  │                  │  status               │
+      │  │  status      │                  │  applied_at           │
+      │  └──────────────┘                  └───────────────────────┘
+      │
+      │  ┌─────────────────────────────────────────┐
+      │  │            medical_records              │
+      │  │  PK id                                  │
+      └──│  FK patient_id → patient_profiles       │
+         │  FK uploaded_by → users (nullable)      │
+         │  record_type │ title │ file_url          │
+         └─────────────────────────────────────────┘
+
+  ┌──────────────────────────────────────────────┐
+  │           compliance_records                 │
+  │  PK id │ FK org_id → organizations           │
+  │  nurse_name │ requirement │ due_date          │
+  │  status: COMPLIANT|PENDING|NON_COMPLIANT      │
+  └──────────────────────────────────────────────┘
+</pre>
+</div>
+
+
+<!-- ══════════════════════════════════════════════════
+     SECTION 7 — RELATIONSHIPS
+══════════════════════════════════════════════════ -->
+<h1>7. Relationships &amp; Cardinality</h1>
+
+<table>
+  <thead>
+    <tr><th>Parent Table</th><th>Child Table</th><th>Type</th><th>Foreign Key</th><th>Delete Rule</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>users</td><td>patient_profiles</td><td><span class="relationship-label">1 : 1</span></td><td>user_id</td><td>CASCADE</td></tr>
+    <tr><td>users</td><td>nurse_profiles</td><td><span class="relationship-label">1 : 1</span></td><td>user_id</td><td>CASCADE</td></tr>
+    <tr><td>users</td><td>organizations</td><td><span class="relationship-label">1 : 1</span></td><td>user_id</td><td>CASCADE</td></tr>
+    <tr><td>organizations</td><td>jobs</td><td><span class="relationship-label">1 : N</span></td><td>organization_id</td><td>CASCADE</td></tr>
+    <tr><td>organizations</td><td>compliance_records</td><td><span class="relationship-label">1 : N</span></td><td>organization_id</td><td>CASCADE</td></tr>
+    <tr><td>patient_profiles</td><td>appointments</td><td><span class="relationship-label">1 : N</span></td><td>patient_id</td><td>RESTRICT</td></tr>
+    <tr><td>nurse_profiles</td><td>appointments</td><td><span class="relationship-label">1 : N</span></td><td>nurse_id (nullable)</td><td>SET NULL</td></tr>
+    <tr><td>patient_profiles</td><td>medical_records</td><td><span class="relationship-label">1 : N</span></td><td>patient_id</td><td>CASCADE</td></tr>
+    <tr><td>users</td><td>medical_records</td><td><span class="relationship-label">1 : N</span></td><td>uploaded_by (nullable)</td><td>SET NULL</td></tr>
+    <tr><td>nurse_profiles</td><td>nurse_applications</td><td><span class="relationship-label">1 : N</span></td><td>nurse_id</td><td>CASCADE</td></tr>
+    <tr><td>jobs</td><td>nurse_applications</td><td><span class="relationship-label">1 : N</span></td><td>job_id</td><td>CASCADE</td></tr>
+    <tr><td>nurse_profiles</td><td>credentials</td><td><span class="relationship-label">1 : N</span></td><td>nurse_id</td><td>CASCADE</td></tr>
+    <tr><td>nurse_profiles</td><td>payments</td><td><span class="relationship-label">1 : N</span></td><td>nurse_id</td><td>RESTRICT</td></tr>
+    <tr><td>appointments</td><td>payments</td><td><span class="relationship-label">1 : N</span></td><td>appointment_id (nullable)</td><td>SET NULL</td></tr>
+  </tbody>
+</table>
+
+
+<!-- ══════════════════════════════════════════════════
+     SECTION 8 — INDEXES
+══════════════════════════════════════════════════ -->
+<h1>8. Indexes &amp; Performance</h1>
+
+<table>
+  <thead>
+    <tr><th>Table</th><th>Index Name</th><th>Column(s)</th><th>Type</th><th>Purpose</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>users</td><td>uq_users_email</td><td>email</td><td>UNIQUE</td><td>Fast login lookup</td></tr>
+    <tr><td>nurse_profiles</td><td>uq_nurse_license</td><td>license_number</td><td>UNIQUE</td><td>License uniqueness check</td></tr>
+    <tr><td>organizations</td><td>uq_org_reg_number</td><td>reg_number</td><td>UNIQUE</td><td>Registration number uniqueness</td></tr>
+    <tr><td>nurse_applications</td><td>uq_nurse_job_app</td><td>(nurse_id, job_id)</td><td>UNIQUE</td><td>Prevent duplicate applications</td></tr>
+    <tr><td>jobs</td><td>idx_jobs_org</td><td>organization_id</td><td>INDEX</td><td>Load organization's job listings</td></tr>
+    <tr><td>jobs</td><td>idx_jobs_status</td><td>status</td><td>INDEX</td><td>Filter active job postings</td></tr>
+    <tr><td>appointments</td><td>idx_appt_patient</td><td>patient_id</td><td>INDEX</td><td>Load patient's appointment history</td></tr>
+    <tr><td>appointments</td><td>idx_appt_nurse</td><td>nurse_id</td><td>INDEX</td><td>Load nurse's work schedule</td></tr>
+    <tr><td>appointments</td><td>idx_appt_status</td><td>status</td><td>INDEX</td><td>Filter by appointment status</td></tr>
+    <tr><td>credentials</td><td>idx_cred_expiry</td><td>expiry_date</td><td>INDEX</td><td>Query credentials expiring soon</td></tr>
+    <tr><td>payments</td><td>idx_pay_nurse</td><td>nurse_id</td><td>INDEX</td><td>Load nurse payment history</td></tr>
+    <tr><td>payments</td><td>idx_pay_status</td><td>status</td><td>INDEX</td><td>Filter pending / processed payments</td></tr>
+  </tbody>
+</table>
+
+
+<!-- ══════════════════════════════════════════════════
+     SECTION 9 — ENUMERATIONS
+══════════════════════════════════════════════════ -->
+<h1>9. Enumerations</h1>
+
+<table>
+  <thead>
+    <tr><th>Table</th><th>Column</th><th>Allowed Values</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>users</td><td>role</td><td>PATIENT, NURSE, ORGANIZATION</td></tr>
+    <tr><td>jobs</td><td>job_type</td><td>TEMPORARY, PERMANENT, EMERGENCY, CONTRACT</td></tr>
+    <tr><td>jobs</td><td>status</td><td>ACTIVE, CLOSED, DRAFT</td></tr>
+    <tr><td>appointments</td><td>status</td><td>PENDING, CONFIRMED, IN_PROGRESS, COMPLETED, CANCELLED</td></tr>
+    <tr><td>nurse_applications</td><td>status</td><td>PENDING, APPROVED, REJECTED</td></tr>
+    <tr><td>compliance_records</td><td>status</td><td>COMPLIANT, PENDING, NON_COMPLIANT</td></tr>
+    <tr><td>credentials</td><td>status</td><td>VERIFIED, PENDING, EXPIRED</td></tr>
+    <tr><td>payments</td><td>status</td><td>PENDING, PROCESSED, FAILED, REFUNDED</td></tr>
+  </tbody>
+</table>
+
+
+<!-- ══════════════════════════════════════════════════
+     SECTION 10 — DESIGN DECISIONS
+══════════════════════════════════════════════════ -->
+<div class="page-break"></div>
+<h1>10. Design Decisions &amp; Rationale</h1>
+
+<h2>10.1 &nbsp; Single <code>users</code> Table for All Roles</h2>
+<p>
+  Rather than creating three separate user tables (patients, nurses, org_admins), a single
+  <code>users</code> table with a <code>role</code> ENUM column is used. Role-specific data is
+  stored in dedicated profile tables. This approach:
+</p>
+<ul>
+  <li>Simplifies authentication — one table, one email uniqueness constraint</li>
+  <li>Keeps the JWT token strategy consistent across all roles</li>
+  <li>Avoids the risk of the same email appearing in multiple tables</li>
+  <li>Makes login routing clean: check role, redirect to appropriate dashboard</li>
+</ul>
+
+<h2>10.2 &nbsp; Nullable <code>nurse_id</code> in <code>appointments</code></h2>
+<p>
+  The <code>nurse_id</code> foreign key in <code>appointments</code> is nullable. A patient can
+  submit an appointment request specifying care needs, and a nurse is matched and assigned later
+  by the organization. This design supports two workflows:
+</p>
+<ul>
+  <li><strong>Direct booking</strong> — patient selects a specific nurse at booking time</li>
+  <li><strong>Demand-based matching</strong> — patient describes needs; platform assigns the best-fit nurse</li>
+</ul>
+
+<h2>10.3 &nbsp; <code>medical_records.uploaded_by</code> References <code>users</code></h2>
+<p>
+  The uploader can be a patient uploading their own documents, or a nurse uploading clinical
+  documentation during a visit. By pointing to <code>users</code> directly (rather than
+  nurse_profiles), both scenarios are covered without needing two separate foreign key columns.
+</p>
+
+<h2>10.4 &nbsp; Composite Unique Constraint on <code>nurse_applications</code></h2>
+<p>
+  The composite unique key <code>(nurse_id, job_id)</code> ensures a nurse cannot apply to the
+  same job more than once. This constraint is enforced at the <strong>database level</strong>,
+  not just in application code, which prevents race conditions in concurrent requests.
+</p>
+
+<h2>10.5 &nbsp; CASCADE vs SET NULL on Delete</h2>
+<ul>
+  <li>
+    <strong>ON DELETE CASCADE</strong> is used where child records have no meaning without the
+    parent — e.g., deleting a nurse deletes their applications and credentials automatically.
+  </li>
+  <li>
+    <strong>ON DELETE SET NULL</strong> is used where child records retain historical value even
+    after the parent is removed — e.g., a payment record for a nurse who left the platform
+    should still exist for financial audit purposes.
+  </li>
+</ul>
+
+<h2>10.6 &nbsp; DECIMAL for Monetary Values</h2>
+<p>
+  All financial columns (<code>amount</code>, <code>salary_min</code>, <code>salary_max</code>,
+  <code>tax_deduction</code>) use <code>DECIMAL(10,2)</code> instead of <code>FLOAT</code> or
+  <code>DOUBLE</code>. FLOAT and DOUBLE use binary floating-point representation which can
+  introduce rounding errors in financial calculations (e.g., 0.1 + 0.2 ≠ 0.3 exactly).
+  DECIMAL stores values as exact fixed-point numbers.
+</p>
+
+<h2>10.7 &nbsp; Hibernate DDL Strategy</h2>
+<p>
+  The application uses <code>spring.jpa.hibernate.ddl-auto=update</code> which allows Hibernate
+  to automatically create or alter tables based on entity changes without dropping existing data.
+  For production deployment, this should be changed to <code>validate</code> and schema
+  migrations should be managed through the provided DDL script.
+</p>
+
+
+<!-- FOOTER -->
+<div class="footer-note">
+  CareConnect &nbsp;|&nbsp; Database Design Document v1.0 &nbsp;|&nbsp; April 2026 &nbsp;|&nbsp;
+  Prepared by Prakhar &nbsp;|&nbsp; Internship Project — SRS 2026
+</div>
+
+</body>
+</html>
