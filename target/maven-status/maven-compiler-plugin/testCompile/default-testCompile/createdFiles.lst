@@ -1,0 +1,5 @@
+com\careconnect\CareConnectApplicationTests.class
+com\careconnect\service\JobServiceTest.class
+com\careconnect\service\AppointmentServiceTest.class
+com\careconnect\service\AuthServiceTest.class
+com\careconnect\service\ApplicationServiceTest.class
