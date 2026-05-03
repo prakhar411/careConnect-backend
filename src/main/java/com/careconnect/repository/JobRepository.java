@@ -25,4 +25,10 @@ public interface JobRepository extends JpaRepository<Job, Long> {
                           @Param("jobType") JobType jobType);
 
     long countByStatus(JobStatus status);
+
+    @Query("SELECT COUNT(j) FROM Job j WHERE j.organization.user.id = :orgUserId")
+    long countByOrgUserId(@Param("orgUserId") Long orgUserId);
+
+    @Query("SELECT COUNT(j) FROM Job j WHERE j.organization.user.id = :orgUserId AND j.status = :status")
+    long countByOrgUserIdAndStatus(@Param("orgUserId") Long orgUserId, @Param("status") JobStatus status);
 }

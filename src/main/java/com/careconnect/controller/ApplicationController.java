@@ -47,6 +47,18 @@ public class ApplicationController {
         return ResponseEntity.ok(ApiResponse.success(applicationService.getByJob(jobId)));
     }
 
+    @GetMapping("/org/{orgUserId}")
+    @Operation(summary = "Get all applications for this organization's jobs")
+    public ResponseEntity<ApiResponse<List<ApplicationResponse>>> getByOrg(@PathVariable Long orgUserId) {
+        return ResponseEntity.ok(ApiResponse.success(applicationService.getByOrg(orgUserId)));
+    }
+
+    @GetMapping("/org/{orgUserId}/approved")
+    @Operation(summary = "Get approved (hired) nurses for this organization")
+    public ResponseEntity<ApiResponse<List<ApplicationResponse>>> getApprovedByOrg(@PathVariable Long orgUserId) {
+        return ResponseEntity.ok(ApiResponse.success(applicationService.getApprovedByOrg(orgUserId)));
+    }
+
     @GetMapping
     @PreAuthorize("hasRole('ORGANIZATION')")
     @Operation(summary = "Get all applications (admin view)")

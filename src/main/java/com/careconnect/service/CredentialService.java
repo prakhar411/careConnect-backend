@@ -54,6 +54,12 @@ public class CredentialService {
         return credentialRepository.findAll().stream().map(this::toResponse).collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
+    public List<CredentialResponse> getByOrg(Long orgUserId) {
+        return credentialRepository.findByOrgUserId(orgUserId)
+                .stream().map(this::toResponse).collect(Collectors.toList());
+    }
+
     public List<CredentialResponse> getExpiringSoon(int daysAhead) {
         return credentialRepository.findExpiringSoon(LocalDate.now().plusDays(daysAhead))
                 .stream().map(this::toResponse).collect(Collectors.toList());

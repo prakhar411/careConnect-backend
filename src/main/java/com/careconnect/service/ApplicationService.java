@@ -62,8 +62,21 @@ public class ApplicationService {
                 .stream().map(this::toResponse).collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
     public List<ApplicationResponse> getAll() {
         return applicationRepository.findAll()
+                .stream().map(this::toResponse).collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public List<ApplicationResponse> getByOrg(Long orgUserId) {
+        return applicationRepository.findByOrgUserId(orgUserId)
+                .stream().map(this::toResponse).collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public List<ApplicationResponse> getApprovedByOrg(Long orgUserId) {
+        return applicationRepository.findByOrgUserIdAndStatus(orgUserId, ApplicationStatus.APPROVED)
                 .stream().map(this::toResponse).collect(Collectors.toList());
     }
 

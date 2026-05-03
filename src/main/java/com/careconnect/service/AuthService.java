@@ -85,10 +85,9 @@ public class AuthService {
     public LoginResponse login(LoginRequest request) {
         String identifier = request.getIdentifier();
 
-        // Try email first; fall back to org registration number
+        // Try email first; fall back to org registration number (direct User query — avoids lazy-load issue)
         User user = userRepository.findByEmail(identifier)
-                .or(() -> organizationRepository.findByRegNumber(identifier)
-                        .map(org -> org.getUser()))
+                .or(() -> organizationRepository.findUserByRegNumber(identifier))
                 .orElseThrow(() -> new UnauthorizedException("Invalid credentials"));
 
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {

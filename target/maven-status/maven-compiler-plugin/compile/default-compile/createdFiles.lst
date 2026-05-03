@@ -1,6 +1,7 @@
 com\careconnect\repository\MedicalRecordRepository.class
 com\careconnect\entity\NurseProfile$NurseProfileBuilder.class
 com\careconnect\config\ModelMapperConfig.class
+com\careconnect\entity\ManagementTeamMember$ManagementTeamMemberBuilder.class
 com\careconnect\repository\ComplianceRecordRepository.class
 com\careconnect\security\JwtAuthenticationFilter.class
 com\careconnect\CareConnectApplication.class
@@ -17,7 +18,9 @@ com\careconnect\controller\CredentialController.class
 com\careconnect\entity\Appointment$AppointmentBuilder.class
 com\careconnect\service\JobService.class
 com\careconnect\entity\PatientProfile$PatientProfileBuilder.class
+com\careconnect\controller\ManagementTeamController.class
 com\careconnect\entity\Appointment.class
+com\careconnect\dto\request\UpdateOrgRequest.class
 com\careconnect\entity\MedicalRecord$MedicalRecordBuilder.class
 com\careconnect\service\ApplicationService.class
 com\careconnect\dto\response\AppointmentResponse$AppointmentResponseBuilder.class
@@ -29,6 +32,7 @@ com\careconnect\dto\response\ApiResponse$ApiResponseBuilder.class
 com\careconnect\entity\MedicalRecord.class
 com\careconnect\enums\UserRole.class
 com\careconnect\service\AuthService.class
+com\careconnect\service\ManagementTeamService.class
 com\careconnect\service\PatientService.class
 com\careconnect\config\SwaggerConfig.class
 com\careconnect\dto\response\LoginResponse.class
@@ -52,9 +56,12 @@ com\careconnect\exception\GlobalExceptionHandler.class
 com\careconnect\service\AuthService$1.class
 com\careconnect\dto\request\ComplianceRequest.class
 com\careconnect\entity\ComplianceRecord$ComplianceRecordBuilder.class
+com\careconnect\entity\ManagementTeamMember.class
+com\careconnect\dto\response\TeamMemberResponse$TeamMemberResponseBuilder.class
 com\careconnect\entity\Organization.class
 com\careconnect\repository\OrganizationRepository.class
 com\careconnect\dto\response\LoginResponse$LoginResponseBuilder.class
+com\careconnect\dto\response\TeamMemberResponse.class
 com\careconnect\controller\PatientController.class
 com\careconnect\repository\NurseProfileRepository.class
 com\careconnect\service\AppointmentService.class
@@ -78,6 +85,7 @@ com\careconnect\entity\User$UserBuilder.class
 com\careconnect\enums\CredentialStatus.class
 com\careconnect\dto\response\PaymentResponse$PaymentResponseBuilder.class
 com\careconnect\entity\ComplianceRecord.class
+com\careconnect\dto\request\TeamMemberRequest.class
 com\careconnect\entity\Payment$PaymentBuilder.class
 com\careconnect\exception\BadRequestException.class
 com\careconnect\entity\NurseApplication.class
@@ -95,6 +103,7 @@ com\careconnect\controller\ApplicationController.class
 com\careconnect\exception\ResourceNotFoundException.class
 com\careconnect\dto\request\AppointmentRequest.class
 com\careconnect\repository\CredentialRepository.class
+com\careconnect\repository\ManagementTeamRepository.class
 com\careconnect\entity\NurseApplication$NurseApplicationBuilder.class
 com\careconnect\entity\Organization$OrganizationBuilder.class
 com\careconnect\config\CorsConfig.class

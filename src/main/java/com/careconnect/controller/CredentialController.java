@@ -46,6 +46,12 @@ public class CredentialController {
         return ResponseEntity.ok(ApiResponse.success(credentialService.getAll()));
     }
 
+    @GetMapping("/org/{orgUserId}")
+    @Operation(summary = "Get credentials of nurses who applied to this org")
+    public ResponseEntity<ApiResponse<List<CredentialResponse>>> getByOrg(@PathVariable Long orgUserId) {
+        return ResponseEntity.ok(ApiResponse.success(credentialService.getByOrg(orgUserId)));
+    }
+
     @GetMapping("/expiring")
     @PreAuthorize("hasRole('ORGANIZATION')")
     @Operation(summary = "Get credentials expiring within N days")

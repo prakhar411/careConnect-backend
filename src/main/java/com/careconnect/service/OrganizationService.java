@@ -1,5 +1,6 @@
 package com.careconnect.service;
 
+import com.careconnect.dto.request.UpdateOrgRequest;
 import com.careconnect.entity.Organization;
 import com.careconnect.enums.ApplicationStatus;
 import com.careconnect.enums.AppointmentStatus;
@@ -9,6 +10,7 @@ import com.careconnect.repository.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Map;
 
@@ -27,14 +29,35 @@ public class OrganizationService {
                 .orElseThrow(() -> new ResourceNotFoundException("Organization", userId));
     }
 
-    public Map<String, Long> getDashboardStats() {
+    @Transactional
+    public Organization updateProfile(Long userId, UpdateOrgRequest request) {
+        Organization org = organizationRepository.findByUserId(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("Organization", userId));
+
+        org.setOrgName(request.getOrgName());
+        org.setOrgType(request.getOrgType());
+        org.setContactPerson(request.getContactPerson());
+        org.setDesignation(request.getDesignation());
+        org.setPhone(request.getPhone());
+        org.setAddress(request.getAddress());
+        org.setCity(request.getCity());
+        org.setState(request.getState());
+        org.setPincode(request.getPincode());
+        org.setWebsite(request.getWebsite());
+        org.setBedCapacity(request.getBedCapacity());
+        org.setSpecializations(request.getSpecializations());
+        org.setAccreditation(request.getAccreditation());
+
+        return organizationRepository.save(org);
+    }
+
+    public Map<String, Long> getDashboardStats(Long orgUserId) {
         return Map.of(
-                "totalJobs", jobRepository.count(),
-                "activeJobs", jobRepository.countByStatus(JobStatus.ACTIVE),
-                "pendingApplications", applicationRepository.countByStatus(ApplicationStatus.PENDING),
-                "approvedApplications", applicationRepository.countByStatus(ApplicationStatus.APPROVED),
-                "totalNurses", userRepository.countByRole(com.careconnect.enums.UserRole.NURSE),
-                "totalPatients", userRepository.countByRole(com.careconnect.enums.UserRole.PATIENT)
+                "totalJobs",            jobRepository.countByOrgUserId(orgUserId),
+                "activeJobs",           jobRepository.countByOrgUserIdAndStatus(orgUserId, JobStatus.ACTIVE),
+                "pendingApplications",  applicationRepository.countByOrgUserIdAndStatus(orgUserId, ApplicationStatus.PENDING),
+                "approvedApplications", applicationRepository.countByOrgUserIdAndStatus(orgUserId, ApplicationStatus.APPROVED),
+                "hiredNurses",          applicationRepository.countHiredNursesByOrgUserId(orgUserId)
         );
     }
 }
