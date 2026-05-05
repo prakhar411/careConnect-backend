@@ -53,6 +53,7 @@ public class AppointmentService {
         return toResponse(appointment);
     }
 
+    @Transactional(readOnly = true)
     public List<AppointmentResponse> getByPatient(Long patientUserId) {
         PatientProfile patient = patientProfileRepository.findByUserId(patientUserId)
                 .orElseThrow(() -> new ResourceNotFoundException("PatientProfile", patientUserId));
@@ -60,6 +61,7 @@ public class AppointmentService {
                 .stream().map(this::toResponse).collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
     public List<AppointmentResponse> getByNurse(Long nurseUserId) {
         NurseProfile nurse = nurseProfileRepository.findByUserId(nurseUserId)
                 .orElseThrow(() -> new ResourceNotFoundException("NurseProfile", nurseUserId));

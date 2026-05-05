@@ -94,6 +94,18 @@ public class AuthService {
             throw new UnauthorizedException("Invalid credentials");
         }
 
+        // Validate that the role selected on the login page matches the account's actual role
+        if (request.getRole() != null && !request.getRole().isBlank()) {
+            try {
+                UserRole requestedRole = UserRole.valueOf(request.getRole().toUpperCase());
+                if (user.getRole() != requestedRole) {
+                    throw new UnauthorizedException("Invalid credentials");
+                }
+            } catch (IllegalArgumentException e) {
+                throw new UnauthorizedException("Invalid credentials");
+            }
+        }
+
         // Temporary placeholder token (JWT will be re-enabled with security)
         String token = Base64.getEncoder()
                 .encodeToString((user.getEmail() + ":" + user.getRole()).getBytes());
