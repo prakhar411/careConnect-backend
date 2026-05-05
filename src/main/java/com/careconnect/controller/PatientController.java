@@ -34,10 +34,18 @@ public class PatientController {
     }
 
     @GetMapping("/{userId}/profile")
-    @PreAuthorize("hasAnyRole('PATIENT', 'NURSE', 'ORGANIZATION')")
     @Operation(summary = "Get a patient profile by user ID")
     public ResponseEntity<ApiResponse<PatientProfile>> getProfile(@PathVariable Long userId) {
         return ResponseEntity.ok(ApiResponse.success(patientService.getProfile(userId)));
+    }
+
+    @PutMapping("/{userId}/profile")
+    @Operation(summary = "Update a patient profile by user ID")
+    public ResponseEntity<ApiResponse<PatientProfile>> updateProfileById(
+            @PathVariable Long userId,
+            @RequestBody Map<String, Object> updates) {
+        return ResponseEntity.ok(ApiResponse.success("Profile updated",
+                patientService.updateProfile(userId, updates)));
     }
 
     @PutMapping("/profile")

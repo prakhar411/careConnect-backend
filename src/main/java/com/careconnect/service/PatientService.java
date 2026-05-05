@@ -8,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.Map;
 
 @Service
@@ -40,6 +41,10 @@ public class PatientService {
                 case "medicalHistory" -> profile.setMedicalHistory((String) value);
                 case "allergies" -> profile.setAllergies((String) value);
                 case "currentMedications" -> profile.setCurrentMedications((String) value);
+                case "dateOfBirth" -> {
+                    if (value instanceof String s && !s.isBlank())
+                        profile.setDateOfBirth(LocalDate.parse(s));
+                }
             }
         });
 

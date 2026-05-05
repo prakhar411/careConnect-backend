@@ -53,4 +53,11 @@ public class AppointmentController {
             @PathVariable Long id, @RequestParam AppointmentStatus status) {
         return ResponseEntity.ok(ApiResponse.success("Status updated", appointmentService.updateStatus(id, status)));
     }
+
+    @PatchMapping("/{id}/reschedule")
+    @Operation(summary = "Reschedule an appointment to a new date/time")
+    public ResponseEntity<ApiResponse<AppointmentResponse>> reschedule(
+            @PathVariable Long id, @RequestParam String newDate) {
+        return ResponseEntity.ok(ApiResponse.success("Appointment rescheduled", appointmentService.reschedule(id, newDate)));
+    }
 }

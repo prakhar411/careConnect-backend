@@ -6,6 +6,7 @@ import com.careconnect.dto.response.LoginResponse;
 import com.careconnect.entity.*;
 import com.careconnect.enums.UserRole;
 import com.careconnect.exception.BadRequestException;
+import com.careconnect.exception.ResourceNotFoundException;
 import com.careconnect.exception.UnauthorizedException;
 import com.careconnect.repository.*;
 import lombok.RequiredArgsConstructor;
@@ -121,6 +122,20 @@ public class AuthService {
                 .role(user.getRole().name())
                 .fullName(fullName)
                 .build();
+    }
+
+    @Transactional
+    public void changePassword(Long userId, String currentPassword, String newPassword) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("User", userId));
+
+        if (!passwordEncoder.matches(currentPassword, user.getPassword())) {
+            throw new UnauthorizedException("Current password is incorrect");
+        }
+
+        user.setPassword(passwordEncoder.encode(newPassword));
+        userRepository.save(user);
+        log.info("Password changed for user: {}", user.getEmail());
     }
 
     private String resolveFullName(User user) {

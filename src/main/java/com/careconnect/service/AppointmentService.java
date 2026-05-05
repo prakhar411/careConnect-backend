@@ -15,6 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -67,6 +68,16 @@ public class AppointmentService {
                 .orElseThrow(() -> new ResourceNotFoundException("NurseProfile", nurseUserId));
         return appointmentRepository.findByNurseId(nurse.getId())
                 .stream().map(this::toResponse).collect(Collectors.toList());
+    }
+
+    @Transactional
+    public AppointmentResponse reschedule(Long id, String newDate) {
+        Appointment appt = appointmentRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Appointment", id));
+        appt.setAppointmentDate(LocalDateTime.parse(newDate.replace("Z", "").substring(0, 19)));
+        appointmentRepository.save(appt);
+        log.info("Appointment {} rescheduled to {}", id, newDate);
+        return toResponse(appt);
     }
 
     @Transactional

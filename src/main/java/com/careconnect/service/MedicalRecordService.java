@@ -45,6 +45,7 @@ public class MedicalRecordService {
         return medicalRecordRepository.save(record);
     }
 
+    @Transactional(readOnly = true)
     public List<MedicalRecord> getByPatient(Long patientUserId) {
         PatientProfile patient = patientProfileRepository.findByUserId(patientUserId)
                 .orElseThrow(() -> new ResourceNotFoundException("PatientProfile", patientUserId));
