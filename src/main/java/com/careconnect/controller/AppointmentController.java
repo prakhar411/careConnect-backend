@@ -1,7 +1,9 @@
 package com.careconnect.controller;
 
+import com.careconnect.dto.request.AppointmentApplicationRequest;
 import com.careconnect.dto.request.AppointmentRequest;
 import com.careconnect.dto.response.ApiResponse;
+import com.careconnect.dto.response.AppointmentApplicationResponse;
 import com.careconnect.dto.response.AppointmentResponse;
 import com.careconnect.enums.AppointmentStatus;
 import com.careconnect.service.AppointmentService;
@@ -59,5 +61,56 @@ public class AppointmentController {
     public ResponseEntity<ApiResponse<AppointmentResponse>> reschedule(
             @PathVariable Long id, @RequestParam String newDate) {
         return ResponseEntity.ok(ApiResponse.success("Appointment rescheduled", appointmentService.reschedule(id, newDate)));
+    }
+
+    @GetMapping("/open")
+    @Operation(summary = "Get all PENDING appointments with no nurse assigned (open patient requests)")
+    public ResponseEntity<ApiResponse<List<AppointmentResponse>>> getOpenAppointments() {
+        return ResponseEntity.ok(ApiResponse.success(appointmentService.getOpenAppointments()));
+    }
+
+    @PatchMapping("/{id}/assign")
+    @Operation(summary = "Nurse accepts / gets assigned to a patient appointment")
+    public ResponseEntity<ApiResponse<AppointmentResponse>> assignNurse(
+            @PathVariable Long id, @RequestParam Long nurseUserId) {
+        return ResponseEntity.ok(ApiResponse.success("Nurse assigned successfully", appointmentService.assignNurse(id, nurseUserId)));
+    }
+
+    @PostMapping("/{id}/apply")
+    @Operation(summary = "Nurse applies to a patient appointment request with salary expectation")
+    public ResponseEntity<ApiResponse<AppointmentApplicationResponse>> applyToAppointment(
+            @PathVariable Long id,
+            @RequestParam Long nurseUserId,
+            @RequestBody AppointmentApplicationRequest request) {
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(ApiResponse.success("Application submitted", appointmentService.applyToAppointment(id, nurseUserId, request)));
+    }
+
+    @GetMapping("/{id}/applications")
+    @Operation(summary = "Get all nurse applications (bids) for a patient appointment")
+    public ResponseEntity<ApiResponse<List<AppointmentApplicationResponse>>> getAppointmentApplications(
+            @PathVariable Long id) {
+        return ResponseEntity.ok(ApiResponse.success(appointmentService.getAppointmentApplications(id)));
+    }
+
+    @GetMapping("/applications/nurse/{nurseUserId}")
+    @Operation(summary = "Get all appointment applications submitted by a nurse")
+    public ResponseEntity<ApiResponse<List<AppointmentApplicationResponse>>> getNurseApplications(
+            @PathVariable Long nurseUserId) {
+        return ResponseEntity.ok(ApiResponse.success(appointmentService.getNurseAppointmentApplications(nurseUserId)));
+    }
+
+    @PostMapping("/applications/{id}/accept")
+    @Operation(summary = "Patient accepts a nurse application — assigns nurse and confirms appointment")
+    public ResponseEntity<ApiResponse<AppointmentResponse>> acceptApplication(@PathVariable Long id) {
+        return ResponseEntity.ok(ApiResponse.success("Nurse selected successfully", appointmentService.acceptApplication(id)));
+    }
+
+    @DeleteMapping("/{id}/apply")
+    @Operation(summary = "Nurse withdraws their application from a patient appointment request")
+    public ResponseEntity<ApiResponse<Void>> withdrawApplication(
+            @PathVariable Long id, @RequestParam Long nurseUserId) {
+        appointmentService.withdrawApplication(id, nurseUserId);
+        return ResponseEntity.ok(ApiResponse.success("Application withdrawn", null));
     }
 }

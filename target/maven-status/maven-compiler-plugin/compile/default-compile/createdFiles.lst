@@ -31,7 +31,6 @@ com\careconnect\dto\response\PaymentResponse.class
 com\careconnect\dto\response\ApiResponse$ApiResponseBuilder.class
 com\careconnect\entity\MedicalRecord.class
 com\careconnect\enums\UserRole.class
-com\careconnect\service\AuthService.class
 com\careconnect\service\ManagementTeamService.class
 com\careconnect\service\PatientService.class
 com\careconnect\config\SwaggerConfig.class
@@ -39,7 +38,6 @@ com\careconnect\dto\response\LoginResponse.class
 com\careconnect\service\NurseService.class
 com\careconnect\dto\request\ApplicationRequest.class
 com\careconnect\repository\NurseApplicationRepository.class
-com\careconnect\controller\AuthController.class
 com\careconnect\repository\PaymentRepository.class
 com\careconnect\dto\response\NurseResponse$NurseResponseBuilder.class
 com\careconnect\dto\response\ApplicationResponse.class
@@ -77,7 +75,6 @@ com\careconnect\entity\User.class
 com\careconnect\dto\response\NurseResponse.class
 com\careconnect\dto\response\ComplianceResponse$ComplianceResponseBuilder.class
 com\careconnect\repository\AppointmentRepository.class
-com\careconnect\dto\request\RegisterRequest.class
 com\careconnect\controller\MedicalRecordController.class
 com\careconnect\enums\AppointmentStatus.class
 com\careconnect\entity\Credential.class

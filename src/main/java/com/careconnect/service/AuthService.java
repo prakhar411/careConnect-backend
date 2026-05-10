@@ -15,6 +15,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.Base64;
 
 @Service
@@ -42,22 +43,73 @@ public class AuthService {
         userRepository.save(user);
 
         if (request.getRole() == UserRole.NURSE) {
+            String nFirst  = request.getFirstName()  != null ? request.getFirstName().trim()  : "";
+            String nMiddle = request.getMiddleName() != null ? request.getMiddleName().trim()  : "";
+            String nLast   = request.getLastName()   != null ? request.getLastName().trim()   : "";
+
+            String nFullName = nFirst
+                    + (nMiddle.isBlank() ? "" : " " + nMiddle)
+                    + (nLast.isBlank()   ? "" : " " + nLast);
+            if (nFullName.isBlank()) nFullName = request.getFullName() != null ? request.getFullName() : "";
+
+            String nPhone = (request.getPhoneCountryCode() != null ? request.getPhoneCountryCode() : "+91")
+                            + (request.getPhone() != null ? request.getPhone() : "");
+
             NurseProfile profile = NurseProfile.builder()
                     .user(user)
-                    .fullName(request.getFullName())
-                    .phone(request.getPhone())
+                    .fullName(nFullName.isBlank() ? user.getEmail() : nFullName)
+                    .firstName(nFirst)
+                    .middleName(nMiddle.isBlank() ? null : nMiddle)
+                    .lastName(nLast)
+                    .phone(nPhone)
+                    .phoneCountryCode(request.getPhoneCountryCode())
                     .licenseNumber(request.getLicenseNumber())
                     .specialization(request.getSpecialization())
                     .experienceYears(request.getExperienceYears())
                     .education(request.getEducation())
+                    .availability(request.getAvailability())
+                    .addressLine1(request.getAddressLine1())
+                    .addressLine2(request.getAddressLine2())
+                    .landmark(request.getLandmark())
+                    .country(request.getCountry() != null ? request.getCountry() : "India")
+                    .state(request.getState())
+                    .city(request.getCity())
+                    .pincode(request.getPincode())
                     .build();
             nurseProfileRepository.save(profile);
 
         } else if (request.getRole() == UserRole.PATIENT) {
+            String firstName  = request.getFirstName()  != null ? request.getFirstName().trim()  : "";
+            String middleName = request.getMiddleName() != null ? request.getMiddleName().trim()  : "";
+            String lastName   = request.getLastName()   != null ? request.getLastName().trim()   : "";
+
+            String fullName = firstName
+                    + (middleName.isBlank() ? "" : " " + middleName)
+                    + (lastName.isBlank()   ? "" : " " + lastName);
+            if (fullName.isBlank()) fullName = request.getFullName() != null ? request.getFullName() : "";
+
+            String phone = (request.getPhoneCountryCode() != null ? request.getPhoneCountryCode() : "+91")
+                           + (request.getPhone() != null ? request.getPhone() : "");
+
             PatientProfile profile = PatientProfile.builder()
                     .user(user)
-                    .fullName(request.getFullName())
-                    .phone(request.getPhone())
+                    .fullName(fullName.isBlank() ? user.getEmail() : fullName)
+                    .firstName(firstName)
+                    .middleName(middleName.isBlank() ? null : middleName)
+                    .lastName(lastName)
+                    .gender(request.getGender())
+                    .bloodGroup(request.getBloodGroup())
+                    .phone(phone)
+                    .phoneCountryCode(request.getPhoneCountryCode())
+                    .addressLine1(request.getAddressLine1())
+                    .addressLine2(request.getAddressLine2())
+                    .landmark(request.getLandmark())
+                    .country(request.getCountry() != null ? request.getCountry() : "India")
+                    .state(request.getState())
+                    .city(request.getCity())
+                    .pincode(request.getPincode())
+                    .dateOfBirth(request.getDateOfBirth() != null && !request.getDateOfBirth().isBlank()
+                            ? LocalDate.parse(request.getDateOfBirth()) : null)
                     .build();
             patientProfileRepository.save(profile);
 

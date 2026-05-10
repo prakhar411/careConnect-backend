@@ -21,6 +21,7 @@ public class ManagementTeamService {
     private final ManagementTeamRepository teamRepository;
     private final OrganizationRepository organizationRepository;
 
+    @Transactional(readOnly = true)
     public List<TeamMemberResponse> getByOrg(Long orgUserId) {
         Organization org = organizationRepository.findByUserId(orgUserId)
                 .orElseThrow(() -> new ResourceNotFoundException("Organization", orgUserId));

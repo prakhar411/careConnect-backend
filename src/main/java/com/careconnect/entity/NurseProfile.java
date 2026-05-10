@@ -21,13 +21,25 @@ public class NurseProfile {
     @Column(nullable = false)
     private String fullName;
 
+    private String firstName;
+    private String middleName;
+    private String lastName;
+
     @Column(unique = true)
     private String licenseNumber;
 
     private String phone;
+    private String phoneCountryCode;
     private String specialization;
     private String education;
     private String address;
+    private String addressLine1;
+    private String addressLine2;
+    private String landmark;
+    private String country;
+    private String state;
+    private String city;
+    private String pincode;
     private Integer experienceYears;
     private String expertise;
     private String previousEmployment;

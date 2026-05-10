@@ -17,6 +17,8 @@ public class NurseResponse {
     private String expertise;
     private Integer experienceYears;
     private String availability;
+    private String address;
+    private String references;
     private Double rating;
     private String profileStatus;
 }

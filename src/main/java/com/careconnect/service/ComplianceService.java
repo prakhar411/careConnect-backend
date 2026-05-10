@@ -42,6 +42,7 @@ public class ComplianceService {
         return toResponse(record);
     }
 
+    @Transactional(readOnly = true)
     public List<ComplianceResponse> getByOrganization(Long orgUserId) {
         Organization org = organizationRepository.findByUserId(orgUserId)
                 .orElseThrow(() -> new ResourceNotFoundException("Organization", orgUserId));
@@ -58,6 +59,7 @@ public class ComplianceService {
         return toResponse(record);
     }
 
+    @Transactional
     public void delete(Long id) {
         complianceRepository.deleteById(id);
     }

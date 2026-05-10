@@ -30,17 +30,27 @@ public class PatientService {
 
         updates.forEach((key, value) -> {
             switch (key) {
-                case "fullName" -> profile.setFullName((String) value);
-                case "phone" -> profile.setPhone((String) value);
-                case "address" -> profile.setAddress((String) value);
-                case "city" -> profile.setCity((String) value);
-                case "state" -> profile.setState((String) value);
-                case "bloodGroup" -> profile.setBloodGroup((String) value);
-                case "emergencyContact" -> profile.setEmergencyContact((String) value);
+                case "fullName"              -> profile.setFullName((String) value);
+                case "firstName"             -> profile.setFirstName((String) value);
+                case "middleName"            -> profile.setMiddleName((String) value);
+                case "lastName"              -> profile.setLastName((String) value);
+                case "gender"                -> profile.setGender((String) value);
+                case "phone"                 -> profile.setPhone((String) value);
+                case "phoneCountryCode"      -> profile.setPhoneCountryCode((String) value);
+                case "address"               -> profile.setAddress((String) value);
+                case "addressLine1"          -> profile.setAddressLine1((String) value);
+                case "addressLine2"          -> profile.setAddressLine2((String) value);
+                case "landmark"              -> profile.setLandmark((String) value);
+                case "country"               -> profile.setCountry((String) value);
+                case "city"                  -> profile.setCity((String) value);
+                case "state"                 -> profile.setState((String) value);
+                case "pincode"               -> profile.setPincode((String) value);
+                case "bloodGroup"            -> profile.setBloodGroup((String) value);
+                case "emergencyContact"      -> profile.setEmergencyContact((String) value);
                 case "emergencyContactPhone" -> profile.setEmergencyContactPhone((String) value);
-                case "medicalHistory" -> profile.setMedicalHistory((String) value);
-                case "allergies" -> profile.setAllergies((String) value);
-                case "currentMedications" -> profile.setCurrentMedications((String) value);
+                case "medicalHistory"        -> profile.setMedicalHistory((String) value);
+                case "allergies"             -> profile.setAllergies((String) value);
+                case "currentMedications"    -> profile.setCurrentMedications((String) value);
                 case "dateOfBirth" -> {
                     if (value instanceof String s && !s.isBlank())
                         profile.setDateOfBirth(LocalDate.parse(s));

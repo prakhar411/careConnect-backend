@@ -43,6 +43,7 @@ public class CredentialService {
         return toResponse(credential);
     }
 
+    @Transactional(readOnly = true)
     public List<CredentialResponse> getByNurse(Long nurseUserId) {
         NurseProfile nurse = nurseProfileRepository.findByUserId(nurseUserId)
                 .orElseThrow(() -> new ResourceNotFoundException("NurseProfile", nurseUserId));
@@ -50,6 +51,7 @@ public class CredentialService {
                 .stream().map(this::toResponse).collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
     public List<CredentialResponse> getAll() {
         return credentialRepository.findAll().stream().map(this::toResponse).collect(Collectors.toList());
     }
@@ -60,6 +62,7 @@ public class CredentialService {
                 .stream().map(this::toResponse).collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
     public List<CredentialResponse> getExpiringSoon(int daysAhead) {
         return credentialRepository.findExpiringSoon(LocalDate.now().plusDays(daysAhead))
                 .stream().map(this::toResponse).collect(Collectors.toList());

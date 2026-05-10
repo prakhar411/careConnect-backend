@@ -22,6 +22,7 @@ public class NurseService {
     private final NurseProfileRepository nurseProfileRepository;
     private final UserRepository userRepository;
 
+    @Transactional(readOnly = true)
     public NurseResponse getProfile(Long userId) {
         NurseProfile profile = nurseProfileRepository.findByUserId(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("NurseProfile", userId));
@@ -35,14 +36,20 @@ public class NurseService {
 
         updates.forEach((key, value) -> {
             switch (key) {
-                case "fullName" -> profile.setFullName((String) value);
-                case "phone" -> profile.setPhone((String) value);
-                case "specialization" -> profile.setSpecialization((String) value);
-                case "expertise" -> profile.setExpertise((String) value);
-                case "education" -> profile.setEducation((String) value);
-                case "availability" -> profile.setAvailability((String) value);
-                case "previousEmployment" -> profile.setPreviousEmployment((String) value);
-                case "references" -> profile.setReferences((String) value);
+                case "fullName"          -> profile.setFullName((String) value);
+                case "phone"             -> profile.setPhone((String) value);
+                case "specialization"    -> profile.setSpecialization((String) value);
+                case "expertise"         -> profile.setExpertise((String) value);
+                case "education"         -> profile.setEducation((String) value);
+                case "availability"      -> profile.setAvailability((String) value);
+                case "address"           -> profile.setAddress((String) value);
+                case "previousEmployment"-> profile.setPreviousEmployment((String) value);
+                case "references"        -> profile.setReferences((String) value);
+                case "experienceYears"   -> {
+                    if (value instanceof Number n) profile.setExperienceYears(n.intValue());
+                    else if (value instanceof String s && !s.isBlank())
+                        profile.setExperienceYears(Integer.parseInt(s));
+                }
             }
         });
 
@@ -50,11 +57,13 @@ public class NurseService {
         return toResponse(profile);
     }
 
+    @Transactional(readOnly = true)
     public List<NurseResponse> searchNurses(String specialization, String availability) {
         return nurseProfileRepository.searchNurses(specialization, availability)
                 .stream().map(this::toResponse).collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
     public List<NurseResponse> getAllNurses() {
         return nurseProfileRepository.findAll().stream().map(this::toResponse).collect(Collectors.toList());
     }
@@ -72,6 +81,8 @@ public class NurseService {
                 .expertise(profile.getExpertise())
                 .experienceYears(profile.getExperienceYears())
                 .availability(profile.getAvailability())
+                .address(profile.getAddress())
+                .references(profile.getReferences())
                 .rating(profile.getRating())
                 .profileStatus(profile.getProfileStatus())
                 .build();

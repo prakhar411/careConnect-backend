@@ -1,5 +1,6 @@
 package com.careconnect.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
@@ -25,12 +26,30 @@ public class PatientProfile {
     @Column(nullable = false)
     private String fullName;
 
+    private String firstName;
+    private String middleName;
+    private String lastName;
+
+    private String gender;
+
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDate dateOfBirth;
     private String bloodGroup;
+
+    private String phoneCountryCode;
     private String phone;
-    private String address;
+
+    // Structured address
+    private String addressLine1;
+    private String addressLine2;
+    private String landmark;
+    private String country;
     private String city;
     private String state;
+    private String pincode;
+
+    // Legacy flat address field (kept for backward compat)
+    private String address;
     private String emergencyContact;
     private String emergencyContactPhone;
     private String medicalHistory;

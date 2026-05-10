@@ -53,11 +53,13 @@ public class JobService {
         return toResponse(job);
     }
 
+    @Transactional(readOnly = true)
     public List<JobResponse> searchJobs(String specialization, String location, JobType jobType) {
         return jobRepository.searchJobs(specialization, location, jobType)
                 .stream().map(this::toResponse).collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
     public List<JobResponse> getJobsByOrganization(Long userId) {
         Organization org = organizationRepository.findByUserId(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("Organization", userId));
@@ -65,6 +67,7 @@ public class JobService {
                 .stream().map(this::toResponse).collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
     public JobResponse getJobById(Long id) {
         return toResponse(jobRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Job", id)));

@@ -7,8 +7,7 @@ import lombok.Data;
 @Data
 public class RegisterRequest {
 
-    @NotBlank(message = "Please provide a valid <fullName>")
-    @Size(min = 2, message = "Please provide a valid <fullName>")
+    // Optional — patients use firstName/lastName; nurse & org send fullName
     private String fullName;
 
     @NotBlank(message = "Please provide a valid <email>")
@@ -24,11 +23,30 @@ public class RegisterRequest {
 
     private String phone;
 
+    // Patient-specific
+    private String firstName;
+    private String middleName;
+    private String lastName;
+    private String gender;
+    private String dateOfBirth;
+    private String bloodGroup;
+    private String phoneCountryCode;
+    private String addressLine1;
+    private String addressLine2;
+    private String landmark;
+    private String country;
+
+    // Shared address fields (patient + org)
+    private String city;
+    private String state;
+    private String pincode;
+
     // Nurse-specific
     private String licenseNumber;
     private String specialization;
     private Integer experienceYears;
     private String education;
+    private String availability;
 
     // Organization-specific
     private String orgName;
@@ -37,8 +55,5 @@ public class RegisterRequest {
     private String contactPerson;
     private String designation;
     private String address;
-    private String city;
-    private String state;
-    private String pincode;
     private String website;
 }
