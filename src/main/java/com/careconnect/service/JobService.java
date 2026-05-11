@@ -26,6 +26,7 @@ public class JobService {
     private final JobRepository jobRepository;
     private final OrganizationRepository organizationRepository;
     private final ModelMapper modelMapper;
+    private final NotificationService notificationService;
 
     @Transactional
     public JobResponse createJob(Long userId, JobRequest request) {
@@ -50,6 +51,10 @@ public class JobService {
 
         jobRepository.save(job);
         log.info("Job created: {} by org {}", request.getJobTitle(), org.getOrgName());
+
+        notificationService.broadcast("NEW_JOB",
+            job.getJobTitle() + "|" + org.getOrgName() + "|" + (job.getLocation() != null ? job.getLocation() : ""));
+
         return toResponse(job);
     }
 

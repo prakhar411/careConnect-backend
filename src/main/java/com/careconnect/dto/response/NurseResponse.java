@@ -18,6 +18,17 @@ public class NurseResponse {
     private Integer experienceYears;
     private String availability;
     private String address;
+    private String firstName;
+    private String middleName;
+    private String lastName;
+    private String phoneCountryCode;
+    private String addressLine1;
+    private String addressLine2;
+    private String landmark;
+    private String country;
+    private String state;
+    private String city;
+    private String pincode;
     private String references;
     private Double rating;
     private String profileStatus;

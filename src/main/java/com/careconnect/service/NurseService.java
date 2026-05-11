@@ -37,12 +37,23 @@ public class NurseService {
         updates.forEach((key, value) -> {
             switch (key) {
                 case "fullName"          -> profile.setFullName((String) value);
+                case "firstName"         -> profile.setFirstName((String) value);
+                case "middleName"        -> profile.setMiddleName((String) value);
+                case "lastName"          -> profile.setLastName((String) value);
                 case "phone"             -> profile.setPhone((String) value);
+                case "phoneCountryCode"  -> profile.setPhoneCountryCode((String) value);
                 case "specialization"    -> profile.setSpecialization((String) value);
                 case "expertise"         -> profile.setExpertise((String) value);
                 case "education"         -> profile.setEducation((String) value);
                 case "availability"      -> profile.setAvailability((String) value);
                 case "address"           -> profile.setAddress((String) value);
+                case "addressLine1"      -> profile.setAddressLine1((String) value);
+                case "addressLine2"      -> profile.setAddressLine2((String) value);
+                case "landmark"          -> profile.setLandmark((String) value);
+                case "country"           -> profile.setCountry((String) value);
+                case "state"             -> profile.setState((String) value);
+                case "city"              -> profile.setCity((String) value);
+                case "pincode"           -> profile.setPincode((String) value);
                 case "previousEmployment"-> profile.setPreviousEmployment((String) value);
                 case "references"        -> profile.setReferences((String) value);
                 case "experienceYears"   -> {
@@ -73,15 +84,26 @@ public class NurseService {
                 .id(profile.getId())
                 .userId(profile.getUser().getId())
                 .fullName(profile.getFullName())
+                .firstName(profile.getFirstName())
+                .middleName(profile.getMiddleName())
+                .lastName(profile.getLastName())
                 .email(profile.getUser().getEmail())
                 .licenseNumber(profile.getLicenseNumber())
                 .phone(profile.getPhone())
+                .phoneCountryCode(profile.getPhoneCountryCode())
                 .specialization(profile.getSpecialization())
                 .education(profile.getEducation())
                 .expertise(profile.getExpertise())
                 .experienceYears(profile.getExperienceYears())
                 .availability(profile.getAvailability())
                 .address(profile.getAddress())
+                .addressLine1(profile.getAddressLine1())
+                .addressLine2(profile.getAddressLine2())
+                .landmark(profile.getLandmark())
+                .country(profile.getCountry())
+                .state(profile.getState())
+                .city(profile.getCity())
+                .pincode(profile.getPincode())
                 .references(profile.getReferences())
                 .rating(profile.getRating())
                 .profileStatus(profile.getProfileStatus())

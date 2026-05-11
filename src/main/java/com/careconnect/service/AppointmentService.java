@@ -34,6 +34,7 @@ public class AppointmentService {
     private final PatientProfileRepository patientProfileRepository;
     private final NurseProfileRepository nurseProfileRepository;
     private final AppointmentApplicationRepository apptApplicationRepository;
+    private final NotificationService notificationService;
 
     @Transactional
     public AppointmentResponse bookAppointment(Long patientUserId, AppointmentRequest request) {
@@ -80,6 +81,12 @@ public class AppointmentService {
 
         appointmentRepository.save(appointment);
         log.info("Appointment booked for patient: {}", patient.getFullName());
+
+        String care = appointment.getCareNeeds() != null ? appointment.getCareNeeds() : "Home Care";
+        String loc  = appointment.getPatientCity() != null ? appointment.getPatientCity()
+                    : appointment.getPatientState() != null ? appointment.getPatientState() : "India";
+        notificationService.broadcast("NEW_REQUEST", care + "|" + loc);
+
         return toResponse(appointment);
     }
 
@@ -222,8 +229,10 @@ public class AppointmentService {
         return AppointmentResponse.builder()
                 .id(a.getId())
                 .patientId(a.getPatient().getId())
+                .patientUserId(a.getPatient().getUser() != null ? a.getPatient().getUser().getId() : null)
                 .patientName(a.getPatient().getFullName())
                 .nurseId(nurse != null ? nurse.getId() : null)
+                .nurseUserId(nurse != null && nurse.getUser() != null ? nurse.getUser().getId() : null)
                 .nurseName(nurse != null ? nurse.getFullName() : null)
                 .nursePhone(nurse != null ? nurse.getPhone() : null)
                 .nurseEmail(nurse != null && nurse.getUser() != null ? nurse.getUser().getEmail() : null)

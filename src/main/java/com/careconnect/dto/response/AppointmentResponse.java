@@ -11,10 +11,12 @@ import java.time.LocalDateTime;
 public class AppointmentResponse {
     private Long id;
     private Long patientId;
+    private Long patientUserId;
     private String patientName;
 
     // Nurse fields — null when no nurse assigned yet
     private Long nurseId;
+    private Long nurseUserId;
     private String nurseName;
     private String nursePhone;
     private String nurseEmail;
