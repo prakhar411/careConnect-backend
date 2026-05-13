@@ -7,7 +7,6 @@ import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
@@ -35,6 +34,7 @@ public class Job {
     private JobType jobType;
 
     private String specialization;
+    private Integer openings;
     private BigDecimal salaryMin;
     private BigDecimal salaryMax;
     private String shiftDetails;
@@ -46,7 +46,7 @@ public class Job {
     @Builder.Default
     private String priority = "Normal";
 
-    private LocalDate deadline;
+    private LocalDateTime deadline;
 
     @Enumerated(EnumType.STRING)
     @Builder.Default

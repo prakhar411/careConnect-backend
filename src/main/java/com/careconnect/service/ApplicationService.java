@@ -92,6 +92,13 @@ public class ApplicationService {
                 .orElseThrow(() -> new ResourceNotFoundException("Application", id));
         app.setStatus(status);
         applicationRepository.save(app);
+        if (status == ApplicationStatus.APPROVED) {
+            Job job = app.getJob();
+            if (job != null && job.getOpenings() != null && job.getOpenings() > 0) {
+                job.setOpenings(job.getOpenings() - 1);
+                jobRepository.save(job);
+            }
+        }
         return toResponse(app);
     }
 

@@ -5,7 +5,6 @@ import com.careconnect.enums.JobType;
 import lombok.*;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Getter @Setter
@@ -24,7 +23,7 @@ public class JobResponse {
     private BigDecimal salaryMax;
     private String description;
     private String priority;
-    private LocalDate deadline;
+    private LocalDateTime deadline;
     private JobStatus status;
     private LocalDateTime createdAt;
 }

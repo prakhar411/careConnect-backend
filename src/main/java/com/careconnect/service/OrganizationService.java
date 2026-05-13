@@ -36,10 +36,20 @@ public class OrganizationService {
 
         org.setOrgName(request.getOrgName());
         org.setOrgType(request.getOrgType());
+        if (request.getLicenseNumber() != null) org.setLicenseNumber(request.getLicenseNumber());
         org.setContactPerson(request.getContactPerson());
         org.setDesignation(request.getDesignation());
+        org.setContact2FirstName(request.getContact2FirstName());
+        org.setContact2MiddleName(request.getContact2MiddleName());
+        org.setContact2LastName(request.getContact2LastName());
+        org.setContact2Email(request.getContact2Email());
+        org.setContact2Phone(request.getContact2Phone());
+        org.setContact2Designation(request.getContact2Designation());
         org.setPhone(request.getPhone());
-        org.setAddress(request.getAddress());
+        org.setAddressLine1(request.getAddressLine1());
+        org.setAddressLine2(request.getAddressLine2());
+        org.setLandmark(request.getLandmark());
+        if (request.getCountry() != null) org.setCountry(request.getCountry());
         org.setCity(request.getCity());
         org.setState(request.getState());
         org.setPincode(request.getPincode());

@@ -47,4 +47,5 @@ public class AppointmentRequest {
     private String medicalCondition;
     private String mobilityLevel;
     private String dietRequirements;
+    private LocalDateTime applicationDeadline;
 }

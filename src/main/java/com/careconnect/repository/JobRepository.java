@@ -19,10 +19,14 @@ public interface JobRepository extends JpaRepository<Job, Long> {
            "(:specialization IS NULL OR LOWER(j.specialization) LIKE LOWER(CONCAT('%', :specialization, '%'))) AND " +
            "(:location IS NULL OR LOWER(j.location) LIKE LOWER(CONCAT('%', :location, '%'))) AND " +
            "(:jobType IS NULL OR j.jobType = :jobType) AND " +
-           "j.status = 'ACTIVE'")
+           "j.status = 'ACTIVE' AND " +
+           "(j.deadline IS NULL OR j.deadline > CURRENT_TIMESTAMP)")
     List<Job> searchJobs(@Param("specialization") String specialization,
                           @Param("location") String location,
                           @Param("jobType") JobType jobType);
+
+    @Query("SELECT j FROM Job j WHERE j.status = 'ACTIVE' AND j.deadline IS NOT NULL AND j.deadline <= CURRENT_TIMESTAMP")
+    List<Job> findExpiredActiveJobs();
 
     long countByStatus(JobStatus status);
 

@@ -5,7 +5,7 @@ import jakarta.validation.constraints.*;
 import lombok.Data;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Data
 public class JobRequest {
@@ -24,15 +24,16 @@ public class JobRequest {
     private JobType jobType;
 
     private String specialization;
+    private Integer openings;
     private BigDecimal salaryMin;
     private BigDecimal salaryMax;
     private String shiftDetails;
     private String patientAcuity;
 
     @NotBlank(message = "Please provide a valid <description>")
-    @Size(min = 20, message = "Please provide a valid <description>")
+    @Size(min = 10, max = 100, message = "Please provide a valid <description>")
     private String description;
 
     private String priority;
-    private LocalDate deadline;
+    private LocalDateTime deadline;
 }

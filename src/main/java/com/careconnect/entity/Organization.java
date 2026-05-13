@@ -31,10 +31,25 @@ public class Organization {
     @Column(unique = true)
     private String regNumber;
 
+    private String licenseNumber;
     private String contactPerson;
+    private String contactFirstName;
+    private String contactMiddleName;
+    private String contactLastName;
     private String designation;
+    private String contact2FirstName;
+    private String contact2MiddleName;
+    private String contact2LastName;
+    private String contact2Email;
+    private String contact2Phone;
+    private String contact2Designation;
     private String phone;
+    private String phoneCountryCode;
     private String address;
+    private String addressLine1;
+    private String addressLine2;
+    private String landmark;
+    private String country;
     private String city;
     private String state;
     private String pincode;

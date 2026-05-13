@@ -63,6 +63,8 @@ public class Appointment {
     private String mobilityLevel;
     private String dietRequirements;
 
+    private LocalDateTime applicationDeadline;
+
     @Enumerated(EnumType.STRING)
     @Builder.Default
     private AppointmentStatus status = AppointmentStatus.PENDING;

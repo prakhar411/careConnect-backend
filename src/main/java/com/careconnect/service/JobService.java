@@ -12,6 +12,7 @@ import com.careconnect.repository.OrganizationRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -40,6 +41,7 @@ public class JobService {
                 .location(request.getLocation())
                 .jobType(request.getJobType())
                 .specialization(request.getSpecialization())
+                .openings(request.getOpenings())
                 .salaryMin(request.getSalaryMin())
                 .salaryMax(request.getSalaryMax())
                 .shiftDetails(request.getShiftDetails())
@@ -88,6 +90,17 @@ public class JobService {
     @Transactional
     public void deleteJob(Long id) {
         jobRepository.deleteById(id);
+    }
+
+    @Scheduled(fixedRate = 60000)
+    @Transactional
+    public void closeExpiredJobs() {
+        List<Job> expired = jobRepository.findExpiredActiveJobs();
+        if (!expired.isEmpty()) {
+            expired.forEach(j -> j.setStatus(JobStatus.CLOSED));
+            jobRepository.saveAll(expired);
+            log.info("Auto-closed {} expired job(s)", expired.size());
+        }
     }
 
     private JobResponse toResponse(Job job) {

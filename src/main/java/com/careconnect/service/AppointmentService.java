@@ -77,6 +77,7 @@ public class AppointmentService {
                 .medicalCondition(request.getMedicalCondition())
                 .mobilityLevel(request.getMobilityLevel())
                 .dietRequirements(request.getDietRequirements())
+                .applicationDeadline(request.getApplicationDeadline())
                 .build();
 
         appointmentRepository.save(appointment);
@@ -127,8 +128,11 @@ public class AppointmentService {
 
     @Transactional(readOnly = true)
     public List<AppointmentResponse> getOpenAppointments() {
+        java.time.LocalDateTime now = java.time.LocalDateTime.now();
         return appointmentRepository.findOpenAppointments(AppointmentStatus.PENDING)
-                .stream().map(this::toResponse).collect(Collectors.toList());
+                .stream()
+                .filter(a -> a.getApplicationDeadline() == null || a.getApplicationDeadline().isAfter(now))
+                .map(this::toResponse).collect(Collectors.toList());
     }
 
     @Transactional
@@ -275,6 +279,7 @@ public class AppointmentService {
                 .medicalCondition(a.getMedicalCondition())
                 .mobilityLevel(a.getMobilityLevel())
                 .dietRequirements(a.getDietRequirements())
+                .applicationDeadline(a.getApplicationDeadline())
                 .build();
     }
 

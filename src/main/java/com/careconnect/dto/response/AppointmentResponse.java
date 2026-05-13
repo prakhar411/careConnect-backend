@@ -62,4 +62,5 @@ public class AppointmentResponse {
     private String medicalCondition;
     private String mobilityLevel;
     private String dietRequirements;
+    private java.time.LocalDateTime applicationDeadline;
 }

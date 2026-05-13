@@ -114,15 +114,34 @@ public class AuthService {
             patientProfileRepository.save(profile);
 
         } else if (request.getRole() == UserRole.ORGANIZATION) {
+            String cFirst  = request.getContactFirstName()  != null ? request.getContactFirstName().trim()  : "";
+            String cMiddle = request.getContactMiddleName() != null ? request.getContactMiddleName().trim()  : "";
+            String cLast   = request.getContactLastName()   != null ? request.getContactLastName().trim()   : "";
+            String contactPerson = cFirst
+                    + (cMiddle.isBlank() ? "" : " " + cMiddle)
+                    + (cLast.isBlank()   ? "" : " " + cLast);
+            if (contactPerson.isBlank()) contactPerson = request.getContactPerson() != null ? request.getContactPerson() : "";
+
+            String orgPhone = (request.getPhoneCountryCode() != null ? request.getPhoneCountryCode() : "+91")
+                            + (request.getPhone() != null ? request.getPhone() : "");
+
             Organization org = Organization.builder()
                     .user(user)
                     .orgName(request.getOrgName())
                     .orgType(request.getOrgType())
                     .regNumber(request.getRegNumber())
-                    .contactPerson(request.getContactPerson())
+                    .licenseNumber(request.getOrgLicenseNumber())
+                    .contactPerson(contactPerson)
+                    .contactFirstName(cFirst.isBlank() ? null : cFirst)
+                    .contactMiddleName(cMiddle.isBlank() ? null : cMiddle)
+                    .contactLastName(cLast.isBlank() ? null : cLast)
                     .designation(request.getDesignation())
-                    .phone(request.getPhone())
-                    .address(request.getAddress())
+                    .phone(orgPhone)
+                    .phoneCountryCode(request.getPhoneCountryCode())
+                    .addressLine1(request.getAddressLine1())
+                    .addressLine2(request.getAddressLine2())
+                    .landmark(request.getLandmark())
+                    .country(request.getCountry() != null ? request.getCountry() : "India")
                     .city(request.getCity())
                     .state(request.getState())
                     .pincode(request.getPincode())
@@ -141,6 +160,7 @@ public class AuthService {
         // Try email first; fall back to org registration number (direct User query — avoids lazy-load issue)
         User user = userRepository.findByEmail(identifier)
                 .or(() -> organizationRepository.findUserByRegNumber(identifier))
+                .or(() -> organizationRepository.findUserByLicenseNumber(identifier))
                 .orElseThrow(() -> new UnauthorizedException("Invalid credentials"));
 
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {

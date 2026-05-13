@@ -52,7 +52,11 @@ public class RegisterRequest {
     private String orgName;
     private String orgType;
     private String regNumber;
+    private String orgLicenseNumber;
     private String contactPerson;
+    private String contactFirstName;
+    private String contactMiddleName;
+    private String contactLastName;
     private String designation;
     private String address;
     private String website;

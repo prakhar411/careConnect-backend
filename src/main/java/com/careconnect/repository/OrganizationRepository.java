@@ -17,4 +17,7 @@ public interface OrganizationRepository extends JpaRepository<Organization, Long
 
     @Query("SELECT o.user FROM Organization o WHERE o.regNumber = :regNumber")
     Optional<User> findUserByRegNumber(@Param("regNumber") String regNumber);
+
+    @Query("SELECT o.user FROM Organization o WHERE o.licenseNumber = :licenseNumber")
+    Optional<User> findUserByLicenseNumber(@Param("licenseNumber") String licenseNumber);
 }
