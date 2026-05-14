@@ -20,4 +20,6 @@ public interface NurseProfileRepository extends JpaRepository<NurseProfile, Long
            "(:availability IS NULL OR n.availability = :availability)")
     List<NurseProfile> searchNurses(@Param("specialization") String specialization,
                                     @Param("availability") String availability);
+
+    List<NurseProfile> findByAvailableForEmergencyTrue();
 }

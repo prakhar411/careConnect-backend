@@ -56,4 +56,14 @@ public class NurseController {
         paymentService.saveBankDetails(userId, request);
         return ResponseEntity.ok(ApiResponse.success("Bank details saved", null));
     }
+
+    @PatchMapping("/{userId}/emergency-availability")
+    @Operation(summary = "Toggle nurse availability for emergency assignments")
+    public ResponseEntity<ApiResponse<NurseResponse>> toggleEmergencyAvailability(
+            @PathVariable Long userId,
+            @RequestParam boolean available) {
+        NurseResponse res = nurseService.updateProfile(userId, java.util.Map.of("availableForEmergency", available));
+        return ResponseEntity.ok(ApiResponse.success(
+            available ? "You are now available for emergency assignments" : "Emergency availability turned off", res));
+    }
 }

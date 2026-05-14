@@ -49,6 +49,11 @@ public class Job {
     @Builder.Default
     private String priority = "Normal";
 
+    @Builder.Default
+    private Boolean isEmergency = false;
+
+    private String emergencyContact;
+
     private LocalDateTime deadline;
 
     @Enumerated(EnumType.STRING)

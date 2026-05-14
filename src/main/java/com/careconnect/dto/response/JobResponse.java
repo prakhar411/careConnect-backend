@@ -29,6 +29,8 @@ public class JobResponse {
     private String benefits;
     private String description;
     private String priority;
+    private Boolean isEmergency;
+    private String emergencyContact;
     private LocalDateTime deadline;
     private JobStatus status;
     private LocalDateTime createdAt;

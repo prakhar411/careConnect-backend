@@ -39,4 +39,6 @@ public class JobRequest {
 
     private String priority;
     private LocalDateTime deadline;
+    private Boolean isEmergency;
+    private String emergencyContact;
 }

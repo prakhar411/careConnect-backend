@@ -30,6 +30,9 @@ public interface JobRepository extends JpaRepository<Job, Long> {
     @Query("SELECT j FROM Job j WHERE j.status = 'ACTIVE' AND j.deadline IS NOT NULL AND j.deadline <= CURRENT_TIMESTAMP")
     List<Job> findExpiredActiveJobs();
 
+    @Query("SELECT j FROM Job j WHERE j.isEmergency = true AND j.status = 'ACTIVE' ORDER BY j.createdAt DESC")
+    List<Job> findEmergencyJobs();
+
     long countByStatus(JobStatus status);
 
     @Query("SELECT COUNT(j) FROM Job j WHERE j.organization.user.id = :orgUserId")

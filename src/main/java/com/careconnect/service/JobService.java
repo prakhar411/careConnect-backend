@@ -3,11 +3,13 @@ package com.careconnect.service;
 import com.careconnect.dto.request.JobRequest;
 import com.careconnect.dto.response.JobResponse;
 import com.careconnect.entity.Job;
+import com.careconnect.entity.NurseProfile;
 import com.careconnect.entity.Organization;
 import com.careconnect.enums.JobStatus;
 import com.careconnect.enums.JobType;
 import com.careconnect.exception.ResourceNotFoundException;
 import com.careconnect.repository.JobRepository;
+import com.careconnect.repository.NurseProfileRepository;
 import com.careconnect.repository.OrganizationRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,6 +28,7 @@ public class JobService {
 
     private final JobRepository jobRepository;
     private final OrganizationRepository organizationRepository;
+    private final NurseProfileRepository nurseProfileRepository;
     private final ModelMapper modelMapper;
     private final NotificationService notificationService;
 
@@ -33,6 +36,8 @@ public class JobService {
     public JobResponse createJob(Long userId, JobRequest request) {
         Organization org = organizationRepository.findByUserId(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("Organization", userId));
+
+        boolean emergency = Boolean.TRUE.equals(request.getIsEmergency());
 
         Job job = Job.builder()
                 .organization(org)
@@ -50,15 +55,28 @@ public class JobService {
                 .workingConditions(request.getWorkingConditions())
                 .benefits(request.getBenefits())
                 .description(request.getDescription())
-                .priority(request.getPriority())
+                .priority(emergency ? "Critical" : (request.getPriority() != null ? request.getPriority() : "Normal"))
+                .isEmergency(emergency)
+                .emergencyContact(request.getEmergencyContact())
                 .deadline(request.getDeadline())
                 .build();
 
         jobRepository.save(job);
-        log.info("Job created: {} by org {}", request.getJobTitle(), org.getOrgName());
+        log.info("Job created: {} by org {} (emergency={})", request.getJobTitle(), org.getOrgName(), emergency);
 
-        notificationService.broadcast("NEW_JOB",
-            job.getJobTitle() + "|" + org.getOrgName() + "|" + (job.getLocation() != null ? job.getLocation() : ""));
+        if (emergency) {
+            // Notify all nurses who opted in for emergency assignments
+            String title   = "🚨 Emergency: " + job.getJobTitle();
+            String message = org.getOrgName() + " needs urgent help · " + (job.getLocation() != null ? job.getLocation() : "");
+            nurseProfileRepository.findByAvailableForEmergencyTrue().forEach(nurse ->
+                notificationService.pushToUser(
+                    nurse.getUser().getId(), "EMERGENCY_JOB", title, message, job.getId(), "JOB")
+            );
+            log.info("Emergency notifications sent to {} nurse(s)", nurseProfileRepository.findByAvailableForEmergencyTrue().size());
+        } else {
+            notificationService.broadcast("NEW_JOB",
+                job.getJobTitle() + "|" + org.getOrgName() + "|" + (job.getLocation() != null ? job.getLocation() : ""));
+        }
 
         return toResponse(job);
     }
@@ -106,6 +124,12 @@ public class JobService {
         }
     }
 
+    @Transactional(readOnly = true)
+    public List<JobResponse> getEmergencyJobs() {
+        return jobRepository.findEmergencyJobs()
+                .stream().map(this::toResponse).collect(Collectors.toList());
+    }
+
     private JobResponse toResponse(Job job) {
         return JobResponse.builder()
                 .id(job.getId())
@@ -126,6 +150,8 @@ public class JobService {
                 .benefits(job.getBenefits())
                 .description(job.getDescription())
                 .priority(job.getPriority())
+                .isEmergency(job.getIsEmergency())
+                .emergencyContact(job.getEmergencyContact())
                 .deadline(job.getDeadline())
                 .status(job.getStatus())
                 .createdAt(job.getCreatedAt())

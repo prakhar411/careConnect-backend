@@ -32,4 +32,10 @@ public class NurseResponse {
     private String references;
     private Double rating;
     private String profileStatus;
+    private Boolean availableForEmergency;
+    private String upiId;
+    private String bankAccountNumber;
+    private String bankIfscCode;
+    private String bankName;
+    private String preferredPaymentMode;
 }

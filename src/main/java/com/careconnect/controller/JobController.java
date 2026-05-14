@@ -61,6 +61,12 @@ public class JobController {
         return ResponseEntity.ok(ApiResponse.success("Status updated", null));
     }
 
+    @GetMapping("/emergency")
+    @Operation(summary = "Get all active emergency job postings")
+    public ResponseEntity<ApiResponse<List<JobResponse>>> getEmergencyJobs() {
+        return ResponseEntity.ok(ApiResponse.success(jobService.getEmergencyJobs()));
+    }
+
     @DeleteMapping("/{id}")
     @Operation(summary = "Delete a job posting")
     public ResponseEntity<ApiResponse<Void>> deleteJob(@PathVariable Long id) {

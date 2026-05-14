@@ -61,6 +61,10 @@ public class NurseService {
                     else if (value instanceof String s && !s.isBlank())
                         profile.setExperienceYears(Integer.parseInt(s));
                 }
+                case "availableForEmergency" -> {
+                    if (value instanceof Boolean b) profile.setAvailableForEmergency(b);
+                    else if (value instanceof String s) profile.setAvailableForEmergency(Boolean.parseBoolean(s));
+                }
             }
         });
 
@@ -107,6 +111,12 @@ public class NurseService {
                 .references(profile.getReferences())
                 .rating(profile.getRating())
                 .profileStatus(profile.getProfileStatus())
+                .availableForEmergency(profile.getAvailableForEmergency())
+                .upiId(profile.getUpiId())
+                .bankAccountNumber(profile.getBankAccountNumber())
+                .bankIfscCode(profile.getBankIfscCode())
+                .bankName(profile.getBankName())
+                .preferredPaymentMode(profile.getPreferredPaymentMode())
                 .build();
     }
 

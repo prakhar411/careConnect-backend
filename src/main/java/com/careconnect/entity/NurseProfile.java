@@ -57,4 +57,8 @@ public class NurseProfile {
     private String bankIfscCode;
     private String bankName;
     private String preferredPaymentMode; // UPI or BANK_TRANSFER
+
+    // Emergency availability
+    @Builder.Default
+    private Boolean availableForEmergency = false;
 }

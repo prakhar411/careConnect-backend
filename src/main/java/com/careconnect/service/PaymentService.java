@@ -53,12 +53,14 @@ public class PaymentService {
         return toResponse(payment);
     }
 
+    @Transactional(readOnly = true)
     public List<PaymentResponse> getByNurse(Long nurseUserId) {
         NurseProfile nurse = findNurseByUserId(nurseUserId);
         return paymentRepository.findByNurseIdOrderByPaymentDateDesc(nurse.getId())
                 .stream().map(this::toResponse).collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
     public BigDecimal getTotalEarnings(Long nurseUserId) {
         NurseProfile nurse = findNurseByUserId(nurseUserId);
         return paymentRepository.sumProcessedByNurseId(nurse.getId());
@@ -119,6 +121,7 @@ public class PaymentService {
     }
 
     // Patient sees all pending shift payments they owe
+    @Transactional(readOnly = true)
     public List<PaymentResponse> getPendingShiftsByPatient(Long patientUserId) {
         return paymentRepository.findPendingShiftsByPatientUserId(patientUserId)
                 .stream().map(this::toResponse).collect(Collectors.toList());
@@ -182,6 +185,7 @@ public class PaymentService {
     }
 
     // Org sees salary payments they've made
+    @Transactional(readOnly = true)
     public List<PaymentResponse> getOrgSalaryHistory(Long orgUserId) {
         return paymentRepository.findSalaryPaymentsByOrgUserId(orgUserId)
                 .stream().map(this::toResponse).collect(Collectors.toList());
