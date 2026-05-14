@@ -50,4 +50,11 @@ public class NurseProfile {
     private String availability;
     private Double rating;
     private String profileStatus;
+
+    // Payment / bank details
+    private String upiId;
+    private String bankAccountNumber;
+    private String bankIfscCode;
+    private String bankName;
+    private String preferredPaymentMode; // UPI or BANK_TRANSFER
 }

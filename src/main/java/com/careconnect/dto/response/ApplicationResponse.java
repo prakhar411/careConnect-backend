@@ -30,4 +30,11 @@ public class ApplicationResponse {
     private ApplicationStatus status;
     private LocalDateTime appliedAt;
     private List<CredentialResponse> nurseCredentials;
+
+    // Nurse bank details (for org salary processing)
+    private String nurseUpiId;
+    private String nurseBankAccount;
+    private String nurseIfsc;
+    private String nurseBankName;
+    private String nursePreferredPaymentMode;
 }

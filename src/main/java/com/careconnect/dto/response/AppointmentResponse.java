@@ -63,4 +63,16 @@ public class AppointmentResponse {
     private String mobilityLevel;
     private String dietRequirements;
     private java.time.LocalDateTime applicationDeadline;
+
+    // Agreed rate per shift (copied from nurse's bid when patient accepts)
+    private java.math.BigDecimal agreedRatePerShift;
+
+    // Nurse bank details (for payment)
+    private String nurseUpiId;
+    private String nurseBankAccount;
+    private String nurseIfsc;
+    private String nurseBankName;
+    private String nursePreferredPaymentMode;
+
+    private java.time.LocalDateTime endDate;
 }

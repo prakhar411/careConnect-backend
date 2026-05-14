@@ -65,6 +65,9 @@ public class Appointment {
 
     private LocalDateTime applicationDeadline;
 
+    // Agreed rate per shift — copied from nurse's AppointmentApplication.salaryExpectation when bid is accepted
+    private java.math.BigDecimal agreedRatePerShift;
+
     @Enumerated(EnumType.STRING)
     @Builder.Default
     private AppointmentStatus status = AppointmentStatus.PENDING;

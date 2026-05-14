@@ -218,9 +218,13 @@ public class AppointmentService {
                     apptApplicationRepository.save(a);
                 });
 
-        // Assign nurse and confirm appointment
+        // Assign nurse, confirm appointment, and store agreed rate per shift
         appointment.setNurse(nurse);
         appointment.setStatus(AppointmentStatus.CONFIRMED);
+        if (chosen.getSalaryExpectation() != null) {
+            appointment.setAgreedRatePerShift(
+                java.math.BigDecimal.valueOf(chosen.getSalaryExpectation()));
+        }
         appointmentRepository.save(appointment);
 
         log.info("Patient accepted nurse {} for appointment {}", nurse.getFullName(), appointment.getId());
@@ -280,6 +284,13 @@ public class AppointmentService {
                 .mobilityLevel(a.getMobilityLevel())
                 .dietRequirements(a.getDietRequirements())
                 .applicationDeadline(a.getApplicationDeadline())
+                .agreedRatePerShift(a.getAgreedRatePerShift())
+                .endDate(a.getEndDate())
+                .nurseUpiId(nurse != null ? nurse.getUpiId() : null)
+                .nurseBankAccount(nurse != null ? nurse.getBankAccountNumber() : null)
+                .nurseIfsc(nurse != null ? nurse.getBankIfscCode() : null)
+                .nurseBankName(nurse != null ? nurse.getBankName() : null)
+                .nursePreferredPaymentMode(nurse != null ? nurse.getPreferredPaymentMode() : null)
                 .build();
     }
 

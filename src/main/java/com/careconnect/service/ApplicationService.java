@@ -129,6 +129,11 @@ public class ApplicationService {
                 .status(a.getStatus())
                 .appliedAt(a.getAppliedAt())
                 .nurseCredentials(credentials)
+                .nurseUpiId(nurse.getUpiId())
+                .nurseBankAccount(nurse.getBankAccountNumber())
+                .nurseIfsc(nurse.getBankIfscCode())
+                .nurseBankName(nurse.getBankName())
+                .nursePreferredPaymentMode(nurse.getPreferredPaymentMode())
                 .build();
     }
 

@@ -38,6 +38,20 @@ public class Payment {
     @Column(columnDefinition = "TEXT")
     private String description;
 
+    // Who paid — PATIENT or ORGANIZATION
+    private String paidBy;
+
+    // userId of the payer (patientUserId for SHIFT, orgUserId for MONTHLY_SALARY)
+    private Long paidByUserId;
+
+    // For org monthly salary — e.g. "May 2026"
+    private String salaryMonth;
+
+    // Salary breakdown (org payments)
+    private BigDecimal grossAmount;
+    private BigDecimal pfDeduction;
+    private BigDecimal esiDeduction;
+
     @Enumerated(EnumType.STRING)
     @Builder.Default
     private PaymentStatus status = PaymentStatus.PENDING;

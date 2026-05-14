@@ -12,9 +12,33 @@ import java.util.List;
 
 @Repository
 public interface PaymentRepository extends JpaRepository<Payment, Long> {
+
     List<Payment> findByNurseIdOrderByPaymentDateDesc(Long nurseId);
     List<Payment> findByStatus(PaymentStatus status);
 
     @Query("SELECT COALESCE(SUM(p.amount), 0) FROM Payment p WHERE p.nurse.id = :nurseId AND p.status = 'PROCESSED'")
     BigDecimal sumProcessedByNurseId(@Param("nurseId") Long nurseId);
+
+    // All PENDING shift payments for a patient (to show what they owe)
+    @Query("SELECT p FROM Payment p WHERE p.paidByUserId = :patientUserId AND p.paymentStructure = 'SHIFT' AND p.status = 'PENDING' ORDER BY p.paymentDate DESC")
+    List<Payment> findPendingShiftsByPatientUserId(@Param("patientUserId") Long patientUserId);
+
+    // PENDING shifts for a specific appointment (patient pays these)
+    @Query("SELECT p FROM Payment p WHERE p.appointment.id = :appointmentId AND p.paidByUserId = :patientUserId AND p.status = 'PENDING'")
+    List<Payment> findPendingShiftsByAppointment(@Param("appointmentId") Long appointmentId, @Param("patientUserId") Long patientUserId);
+
+    // Org salary payment history
+    @Query("SELECT p FROM Payment p WHERE p.paidByUserId = :orgUserId AND p.paymentStructure = 'MONTHLY_SALARY' ORDER BY p.paymentDate DESC")
+    List<Payment> findSalaryPaymentsByOrgUserId(@Param("orgUserId") Long orgUserId);
+
+    // All shift payments for nurse (patient-side) grouped view
+    @Query("SELECT p FROM Payment p WHERE p.nurse.id = :nurseId AND p.paymentStructure = 'SHIFT' ORDER BY p.paymentDate DESC")
+    List<Payment> findShiftPaymentsByNurseId(@Param("nurseId") Long nurseId);
+
+    // All salary payments for nurse (org-side)
+    @Query("SELECT p FROM Payment p WHERE p.nurse.id = :nurseId AND p.paymentStructure = 'MONTHLY_SALARY' ORDER BY p.paymentDate DESC")
+    List<Payment> findSalaryPaymentsByNurseId(@Param("nurseId") Long nurseId);
+
+    @Query("SELECT COALESCE(SUM(p.amount), 0) FROM Payment p WHERE p.nurse.id = :nurseId AND p.paymentStructure = 'SHIFT' AND p.status = 'PENDING'")
+    BigDecimal sumPendingShiftsByNurseId(@Param("nurseId") Long nurseId);
 }
