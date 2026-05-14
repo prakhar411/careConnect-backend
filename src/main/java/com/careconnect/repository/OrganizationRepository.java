@@ -14,6 +14,7 @@ public interface OrganizationRepository extends JpaRepository<Organization, Long
     Optional<Organization> findByUserId(Long userId);
     Optional<Organization> findByRegNumber(String regNumber);
     boolean existsByRegNumber(String regNumber);
+    boolean existsByLicenseNumber(String licenseNumber);
 
     @Query("SELECT o.user FROM Organization o WHERE o.regNumber = :regNumber")
     Optional<User> findUserByRegNumber(@Param("regNumber") String regNumber);

@@ -4,6 +4,8 @@ import com.careconnect.dto.request.LoginRequest;
 import com.careconnect.dto.request.RegisterRequest;
 import com.careconnect.dto.response.ApiResponse;
 import com.careconnect.dto.response.LoginResponse;
+import com.careconnect.repository.OrganizationRepository;
+import com.careconnect.repository.UserRepository;
 import com.careconnect.service.AuthService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -22,6 +24,8 @@ import java.util.Map;
 public class AuthController {
 
     private final AuthService authService;
+    private final OrganizationRepository orgRepository;
+    private final UserRepository userRepository;
 
     @PostMapping("/register")
     @Operation(summary = "Register a new user (Patient, Nurse, or Organization)")
@@ -35,6 +39,22 @@ public class AuthController {
     public ResponseEntity<ApiResponse<LoginResponse>> login(@Valid @RequestBody LoginRequest request) {
         LoginResponse response = authService.login(request);
         return ResponseEntity.ok(ApiResponse.success("Login successful", response));
+    }
+
+    @GetMapping("/check")
+    @Operation(summary = "Check if an org registration or license number already exists")
+    public ResponseEntity<ApiResponse<Map<String, Boolean>>> checkField(
+            @RequestParam String field,
+            @RequestParam String value) {
+        boolean exists = false;
+        if ("regNumber".equals(field)) {
+            exists = orgRepository.existsByRegNumber(value.toUpperCase());
+        } else if ("licenseNumber".equals(field)) {
+            exists = orgRepository.existsByLicenseNumber(value);
+        } else if ("email".equals(field)) {
+            exists = userRepository.existsByEmail(value.toLowerCase());
+        }
+        return ResponseEntity.ok(ApiResponse.success("OK", Map.of("exists", exists)));
     }
 
     @PostMapping("/change-password")

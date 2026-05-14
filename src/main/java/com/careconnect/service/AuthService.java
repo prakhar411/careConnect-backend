@@ -52,8 +52,7 @@ public class AuthService {
                     + (nLast.isBlank()   ? "" : " " + nLast);
             if (nFullName.isBlank()) nFullName = request.getFullName() != null ? request.getFullName() : "";
 
-            String nPhone = (request.getPhoneCountryCode() != null ? request.getPhoneCountryCode() : "+91")
-                            + (request.getPhone() != null ? request.getPhone() : "");
+            String nPhone = request.getPhone() != null ? request.getPhone() : "";
 
             NurseProfile profile = NurseProfile.builder()
                     .user(user)
@@ -88,8 +87,7 @@ public class AuthService {
                     + (lastName.isBlank()   ? "" : " " + lastName);
             if (fullName.isBlank()) fullName = request.getFullName() != null ? request.getFullName() : "";
 
-            String phone = (request.getPhoneCountryCode() != null ? request.getPhoneCountryCode() : "+91")
-                           + (request.getPhone() != null ? request.getPhone() : "");
+            String phone = request.getPhone() != null ? request.getPhone() : "";
 
             PatientProfile profile = PatientProfile.builder()
                     .user(user)
@@ -122,8 +120,7 @@ public class AuthService {
                     + (cLast.isBlank()   ? "" : " " + cLast);
             if (contactPerson.isBlank()) contactPerson = request.getContactPerson() != null ? request.getContactPerson() : "";
 
-            String orgPhone = (request.getPhoneCountryCode() != null ? request.getPhoneCountryCode() : "+91")
-                            + (request.getPhone() != null ? request.getPhone() : "");
+            String orgPhone = request.getPhone() != null ? request.getPhone() : "";
 
             Organization org = Organization.builder()
                     .user(user)
@@ -137,7 +134,6 @@ public class AuthService {
                     .contactLastName(cLast.isBlank() ? null : cLast)
                     .designation(request.getDesignation())
                     .phone(orgPhone)
-                    .phoneCountryCode(request.getPhoneCountryCode())
                     .addressLine1(request.getAddressLine1())
                     .addressLine2(request.getAddressLine2())
                     .landmark(request.getLandmark())

@@ -24,11 +24,14 @@ public class JobRequest {
     private JobType jobType;
 
     private String specialization;
+    private String patientPopulation;
     private Integer openings;
     private BigDecimal salaryMin;
     private BigDecimal salaryMax;
     private String shiftDetails;
     private String patientAcuity;
+    private String workingConditions;
+    private String benefits;
 
     @NotBlank(message = "Please provide a valid <description>")
     @Size(min = 10, max = 100, message = "Please provide a valid <description>")

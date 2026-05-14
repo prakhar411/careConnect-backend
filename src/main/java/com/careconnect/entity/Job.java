@@ -34,11 +34,14 @@ public class Job {
     private JobType jobType;
 
     private String specialization;
+    private String patientPopulation;
     private Integer openings;
     private BigDecimal salaryMin;
     private BigDecimal salaryMax;
     private String shiftDetails;
     private String patientAcuity;
+    private String workingConditions;
+    private String benefits;
 
     @Column(columnDefinition = "TEXT")
     private String description;

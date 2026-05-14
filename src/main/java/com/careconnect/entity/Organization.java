@@ -44,7 +44,6 @@ public class Organization {
     private String contact2Phone;
     private String contact2Designation;
     private String phone;
-    private String phoneCountryCode;
     private String address;
     private String addressLine1;
     private String addressLine2;
