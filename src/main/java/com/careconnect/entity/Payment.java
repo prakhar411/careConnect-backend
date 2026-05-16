@@ -56,6 +56,9 @@ public class Payment {
     @Builder.Default
     private PaymentStatus status = PaymentStatus.PENDING;
 
+    @Column(unique = true)
+    private String referenceNumber;
+
     @CreationTimestamp
     @Column(updatable = false)
     private LocalDateTime paymentDate;

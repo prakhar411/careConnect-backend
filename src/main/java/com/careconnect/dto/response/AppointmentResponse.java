@@ -75,4 +75,9 @@ public class AppointmentResponse {
     private String nursePreferredPaymentMode;
 
     private java.time.LocalDateTime endDate;
+
+    // Reconciliation
+    private String reconciliationStatus;
+    private Integer expectedShifts;
+    private Integer actualShifts;
 }

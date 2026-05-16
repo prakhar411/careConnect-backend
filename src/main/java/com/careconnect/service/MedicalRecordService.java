@@ -1,6 +1,5 @@
 package com.careconnect.service;
 
-import com.careconnect.dto.response.AppointmentResponse;
 import com.careconnect.entity.MedicalRecord;
 import com.careconnect.entity.PatientProfile;
 import com.careconnect.entity.User;
@@ -12,9 +11,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
-import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -24,14 +23,22 @@ public class MedicalRecordService {
     private final MedicalRecordRepository medicalRecordRepository;
     private final PatientProfileRepository patientProfileRepository;
     private final UserRepository userRepository;
+    private final FileStorageService fileStorageService;
 
     @Transactional
     public MedicalRecord addRecord(Long patientUserId, Long uploaderUserId,
-                                    String recordType, String title, String description, String fileUrl) {
+                                    String recordType, String title, String description, MultipartFile file) {
         PatientProfile patient = patientProfileRepository.findByUserId(patientUserId)
                 .orElseThrow(() -> new ResourceNotFoundException("PatientProfile", patientUserId));
         User uploader = userRepository.findById(uploaderUserId)
                 .orElseThrow(() -> new ResourceNotFoundException("User", uploaderUserId));
+
+        String storedFilename = null;
+        String originalFilename = null;
+        if (file != null && !file.isEmpty()) {
+            storedFilename = fileStorageService.store(file);
+            originalFilename = file.getOriginalFilename();
+        }
 
         MedicalRecord record = MedicalRecord.builder()
                 .patient(patient)
@@ -39,7 +46,8 @@ public class MedicalRecordService {
                 .recordType(recordType)
                 .title(title)
                 .description(description)
-                .fileUrl(fileUrl)
+                .fileUrl(storedFilename)
+                .fileName(originalFilename)
                 .build();
 
         return medicalRecordRepository.save(record);

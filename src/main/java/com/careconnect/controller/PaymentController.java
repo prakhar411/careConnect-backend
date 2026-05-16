@@ -100,4 +100,16 @@ public class PaymentController {
     public ResponseEntity<ApiResponse<List<PaymentResponse>>> getOrgSalaryHistory(@PathVariable Long orgUserId) {
         return ResponseEntity.ok(ApiResponse.success(paymentService.getOrgSalaryHistory(orgUserId)));
     }
+
+    @GetMapping("/ref/{referenceNumber}")
+    @Operation(summary = "Fetch payment details by reference number")
+    public ResponseEntity<ApiResponse<PaymentResponse>> getByReference(@PathVariable String referenceNumber) {
+        return ResponseEntity.ok(ApiResponse.success(paymentService.getByReference(referenceNumber)));
+    }
+
+    @GetMapping("/patient/{patientUserId}/history")
+    @Operation(summary = "Get full shift payment history for a patient (pending + processed)")
+    public ResponseEntity<ApiResponse<List<PaymentResponse>>> getPatientHistory(@PathVariable Long patientUserId) {
+        return ResponseEntity.ok(ApiResponse.success(paymentService.getAllShiftsByPatient(patientUserId)));
+    }
 }

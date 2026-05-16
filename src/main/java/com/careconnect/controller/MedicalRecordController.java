@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -22,16 +23,16 @@ public class MedicalRecordController {
     private final MedicalRecordService medicalRecordService;
 
     @PostMapping("/patient/{patientUserId}/uploader/{uploaderUserId}")
-    @Operation(summary = "Add a medical record for a patient")
+    @Operation(summary = "Add a medical record for a patient (file optional)")
     public ResponseEntity<ApiResponse<MedicalRecord>> addRecord(
             @PathVariable Long patientUserId,
             @PathVariable Long uploaderUserId,
             @RequestParam String recordType,
             @RequestParam String title,
             @RequestParam(required = false) String description,
-            @RequestParam(required = false) String fileUrl) {
+            @RequestParam(required = false) MultipartFile file) {
         MedicalRecord record = medicalRecordService.addRecord(
-                patientUserId, uploaderUserId, recordType, title, description, fileUrl);
+                patientUserId, uploaderUserId, recordType, title, description, file);
         return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.success("Record added", record));
     }
 

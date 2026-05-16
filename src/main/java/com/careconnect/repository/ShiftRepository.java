@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Repository
@@ -29,4 +30,14 @@ public interface ShiftRepository extends JpaRepository<Shift, Long> {
     // Count confirmed shifts for an appointment
     @Query("SELECT COUNT(s) FROM Shift s WHERE s.appointment.id = :appointmentId AND s.status = 'CONFIRMED'")
     long countConfirmedByAppointmentId(@Param("appointmentId") Long appointmentId);
+
+    // Duplicate date check — same appointment + same date
+    boolean existsByAppointmentIdAndShiftDate(Long appointmentId, LocalDate shiftDate);
+
+    // Count all shifts for an appointment (for one-time limit)
+    long countByAppointmentId(Long appointmentId);
+
+    // Count non-rejected shifts (confirmed + pending) for reconciliation
+    @Query("SELECT COUNT(s) FROM Shift s WHERE s.appointment.id = :appointmentId AND s.status <> 'REJECTED'")
+    long countNonRejectedByAppointmentId(@Param("appointmentId") Long appointmentId);
 }

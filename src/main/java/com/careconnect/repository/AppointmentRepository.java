@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Repository
@@ -23,4 +24,9 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Long> 
 
     List<Appointment> findByStatus(AppointmentStatus status);
     long countByStatus(AppointmentStatus status);
+
+    // Appointments whose end date has passed, nurse assigned, reconciliation not yet triggered
+    @Query("SELECT a FROM Appointment a WHERE a.endDate IS NOT NULL AND a.endDate <= :now " +
+           "AND a.status IN ('CONFIRMED', 'IN_PROGRESS') AND a.reconciliationStatus IS NULL AND a.nurse IS NOT NULL")
+    List<Appointment> findAppointmentsNeedingReconciliation(@Param("now") LocalDateTime now);
 }

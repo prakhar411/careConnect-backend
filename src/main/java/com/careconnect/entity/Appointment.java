@@ -72,6 +72,13 @@ public class Appointment {
     @Builder.Default
     private AppointmentStatus status = AppointmentStatus.PENDING;
 
+    // Reconciliation — populated by scheduler when endDate passes
+    // PENDING | NURSE_CONFIRMED | PATIENT_CONFIRMED | AGREED | DISPUTED
+    private String reconciliationStatus;
+    private Integer expectedShifts;
+    private LocalDateTime nurseReconciliationAt;
+    private LocalDateTime patientReconciliationAt;
+
     @CreationTimestamp
     @Column(updatable = false)
     private LocalDateTime createdAt;

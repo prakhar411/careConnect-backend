@@ -16,11 +16,15 @@ import com.careconnect.repository.AppointmentApplicationRepository;
 import com.careconnect.repository.AppointmentRepository;
 import com.careconnect.repository.NurseProfileRepository;
 import com.careconnect.repository.PatientProfileRepository;
+import com.careconnect.repository.ShiftRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.DayOfWeek;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -35,6 +39,7 @@ public class AppointmentService {
     private final NurseProfileRepository nurseProfileRepository;
     private final AppointmentApplicationRepository apptApplicationRepository;
     private final NotificationService notificationService;
+    private final ShiftRepository shiftRepository;
 
     @Transactional
     public AppointmentResponse bookAppointment(Long patientUserId, AppointmentRequest request) {
@@ -291,6 +296,9 @@ public class AppointmentService {
                 .nurseIfsc(nurse != null ? nurse.getBankIfscCode() : null)
                 .nurseBankName(nurse != null ? nurse.getBankName() : null)
                 .nursePreferredPaymentMode(nurse != null ? nurse.getPreferredPaymentMode() : null)
+                .reconciliationStatus(a.getReconciliationStatus())
+                .expectedShifts(a.getExpectedShifts())
+                .actualShifts((int) shiftRepository.countNonRejectedByAppointmentId(a.getId()))
                 .build();
     }
 
@@ -323,6 +331,112 @@ public class AppointmentService {
                 .status(a.getStatus())
                 .appliedAt(a.getAppliedAt())
                 .build();
+    }
+
+    // ── Reconciliation ────────────────────────────────────────────────────────
+
+    @Scheduled(fixedRate = 3_600_000) // runs every hour
+    @Transactional
+    public void triggerReconciliation() {
+        List<Appointment> due = appointmentRepository.findAppointmentsNeedingReconciliation(LocalDateTime.now());
+        for (Appointment appt : due) {
+            int expected = calculateExpectedShifts(appt);
+            int actual   = (int) shiftRepository.countNonRejectedByAppointmentId(appt.getId());
+
+            appt.setExpectedShifts(expected);
+
+            if (actual >= expected) {
+                // All shifts done — auto-agree, no confirmation needed
+                appt.setReconciliationStatus("AGREED");
+            } else {
+                appt.setReconciliationStatus("PENDING");
+                // Notify both parties
+                Long patientUserId = appt.getPatient().getUser().getId();
+                Long nurseUserId   = appt.getNurse().getUser().getId();
+                String msg = actual + " of " + expected + " expected shifts were marked for this appointment.";
+                notificationService.pushToUser(patientUserId, "SHIFT",
+                        "Shift Summary — Please Confirm", msg, appt.getId(), "APPOINTMENT");
+                notificationService.pushToUser(nurseUserId, "SHIFT",
+                        "Shift Summary — Please Confirm", msg, appt.getId(), "APPOINTMENT");
+            }
+            appointmentRepository.save(appt);
+            log.info("Reconciliation triggered for appointment={} expected={} actual={} status={}",
+                    appt.getId(), expected, actual, appt.getReconciliationStatus());
+        }
+    }
+
+    @Transactional
+    public AppointmentResponse reconcileByNurse(Long nurseUserId, Long appointmentId) {
+        Appointment appt = appointmentRepository.findById(appointmentId)
+                .orElseThrow(() -> new ResourceNotFoundException("Appointment", appointmentId));
+        if (appt.getNurse() == null || !appt.getNurse().getUser().getId().equals(nurseUserId)) {
+            throw new BadRequestException("This appointment does not belong to you.");
+        }
+        if (!"PENDING".equals(appt.getReconciliationStatus())
+                && !"PATIENT_CONFIRMED".equals(appt.getReconciliationStatus())) {
+            throw new BadRequestException("Reconciliation is not pending for this appointment.");
+        }
+        appt.setNurseReconciliationAt(LocalDateTime.now());
+        String next = "PATIENT_CONFIRMED".equals(appt.getReconciliationStatus()) ? "AGREED" : "NURSE_CONFIRMED";
+        appt.setReconciliationStatus(next);
+        appointmentRepository.save(appt);
+        log.info("Nurse {} confirmed reconciliation for appointment={}", nurseUserId, appointmentId);
+        return toResponse(appt);
+    }
+
+    @Transactional
+    public AppointmentResponse reconcileByPatient(Long patientUserId, Long appointmentId) {
+        Appointment appt = appointmentRepository.findById(appointmentId)
+                .orElseThrow(() -> new ResourceNotFoundException("Appointment", appointmentId));
+        if (!appt.getPatient().getUser().getId().equals(patientUserId)) {
+            throw new BadRequestException("This appointment does not belong to you.");
+        }
+        if (!"PENDING".equals(appt.getReconciliationStatus())
+                && !"NURSE_CONFIRMED".equals(appt.getReconciliationStatus())) {
+            throw new BadRequestException("Reconciliation is not pending for this appointment.");
+        }
+        appt.setPatientReconciliationAt(LocalDateTime.now());
+        String next = "NURSE_CONFIRMED".equals(appt.getReconciliationStatus()) ? "AGREED" : "PATIENT_CONFIRMED";
+        appt.setReconciliationStatus(next);
+        appointmentRepository.save(appt);
+        log.info("Patient {} confirmed reconciliation for appointment={}", patientUserId, appointmentId);
+        return toResponse(appt);
+    }
+
+    private int calculateExpectedShifts(Appointment appt) {
+        LocalDate start = appt.getAppointmentDate().toLocalDate();
+        LocalDate end   = appt.getEndDate() != null ? appt.getEndDate().toLocalDate() : start;
+        String type     = appt.getScheduleType() != null ? appt.getScheduleType().toUpperCase() : "ONE_TIME";
+
+        if ("ONE_TIME".equals(type)) return 1;
+
+        if ("DAILY".equals(type)) {
+            return (int) (end.toEpochDay() - start.toEpochDay() + 1);
+        }
+
+        if ("WEEKLY".equals(type)) {
+            String days = appt.getScheduleDays();
+            if (days == null || days.isBlank()) return 1;
+            // Count occurrences of each selected weekday between start and end
+            int count = 0;
+            for (LocalDate d = start; !d.isAfter(end); d = d.plusDays(1)) {
+                String fullName  = d.getDayOfWeek().name();          // MONDAY
+                String shortName = fullName.substring(0, 3);          // MON
+                String upperDays = days.toUpperCase();
+                if (upperDays.contains(fullName) || upperDays.contains(shortName)) count++;
+            }
+            return count == 0 ? 1 : count;
+        }
+
+        if ("MONTHLY".equals(type)) {
+            int months = (end.getYear() - start.getYear()) * 12
+                       + (end.getMonthValue() - start.getMonthValue()) + 1;
+            String days = appt.getScheduleDays();
+            int daysPerMonth = (days != null && !days.isBlank()) ? days.split(",").length : 1;
+            return months * daysPerMonth;
+        }
+
+        return 1;
     }
 
     public List<AppointmentResponse> fallbackList(Throwable t) {

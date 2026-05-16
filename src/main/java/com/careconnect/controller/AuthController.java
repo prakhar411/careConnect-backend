@@ -4,6 +4,7 @@ import com.careconnect.dto.request.LoginRequest;
 import com.careconnect.dto.request.RegisterRequest;
 import com.careconnect.dto.response.ApiResponse;
 import com.careconnect.dto.response.LoginResponse;
+import com.careconnect.repository.NurseProfileRepository;
 import com.careconnect.repository.OrganizationRepository;
 import com.careconnect.repository.UserRepository;
 import com.careconnect.service.AuthService;
@@ -26,6 +27,7 @@ public class AuthController {
     private final AuthService authService;
     private final OrganizationRepository orgRepository;
     private final UserRepository userRepository;
+    private final NurseProfileRepository nurseProfileRepository;
 
     @PostMapping("/register")
     @Operation(summary = "Register a new user (Patient, Nurse, or Organization)")
@@ -51,6 +53,8 @@ public class AuthController {
             exists = orgRepository.existsByRegNumber(value.toUpperCase());
         } else if ("licenseNumber".equals(field)) {
             exists = orgRepository.existsByLicenseNumber(value);
+        } else if ("nurseLicense".equals(field)) {
+            exists = nurseProfileRepository.existsByLicenseNumber(value.toUpperCase());
         } else if ("email".equals(field)) {
             exists = userRepository.existsByEmail(value.toLowerCase());
         }

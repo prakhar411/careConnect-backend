@@ -4,16 +4,19 @@ C:\Users\prakhar\Music\Angular\CareConnect\careConnect-backend\src\main\java\com
 C:\Users\prakhar\Music\Angular\CareConnect\careConnect-backend\src\main\java\com\careconnect\config\JacksonConfig.java
 C:\Users\prakhar\Music\Angular\CareConnect\careConnect-backend\src\main\java\com\careconnect\entity\Job.java
 C:\Users\prakhar\Music\Angular\CareConnect\careConnect-backend\src\main\java\com\careconnect\security\JwtTokenProvider.java
+C:\Users\prakhar\Music\Angular\CareConnect\careConnect-backend\src\main\java\com\careconnect\service\FileStorageService.java
 C:\Users\prakhar\Music\Angular\CareConnect\careConnect-backend\src\main\java\com\careconnect\dto\response\ApplicationResponse.java
 C:\Users\prakhar\Music\Angular\CareConnect\careConnect-backend\src\main\java\com\careconnect\dto\response\CredentialResponse.java
 C:\Users\prakhar\Music\Angular\CareConnect\careConnect-backend\src\main\java\com\careconnect\service\GeoService.java
 C:\Users\prakhar\Music\Angular\CareConnect\careConnect-backend\src\main\java\com\careconnect\dto\request\ComplianceRequest.java
 C:\Users\prakhar\Music\Angular\CareConnect\careConnect-backend\src\main\java\com\careconnect\controller\CredentialController.java
+C:\Users\prakhar\Music\Angular\CareConnect\careConnect-backend\src\main\java\com\careconnect\controller\FileController.java
 C:\Users\prakhar\Music\Angular\CareConnect\careConnect-backend\src\main\java\com\careconnect\dto\request\ApplicationRequest.java
 C:\Users\prakhar\Music\Angular\CareConnect\careConnect-backend\src\main\java\com\careconnect\dto\response\PaymentResponse.java
 C:\Users\prakhar\Music\Angular\CareConnect\careConnect-backend\src\main\java\com\careconnect\service\PaymentService.java
 C:\Users\prakhar\Music\Angular\CareConnect\careConnect-backend\src\main\java\com\careconnect\repository\ShiftRepository.java
 C:\Users\prakhar\Music\Angular\CareConnect\careConnect-backend\src\main\java\com\careconnect\config\SwaggerConfig.java
+C:\Users\prakhar\Music\Angular\CareConnect\careConnect-backend\src\main\java\com\careconnect\repository\VitalSignRepository.java
 C:\Users\prakhar\Music\Angular\CareConnect\careConnect-backend\src\main\java\com\careconnect\dto\response\TeamMemberResponse.java
 C:\Users\prakhar\Music\Angular\CareConnect\careConnect-backend\src\main\java\com\careconnect\service\AuthService.java
 C:\Users\prakhar\Music\Angular\CareConnect\careConnect-backend\src\main\java\com\careconnect\controller\MessageController.java
@@ -55,6 +58,7 @@ C:\Users\prakhar\Music\Angular\CareConnect\careConnect-backend\src\main\java\com
 C:\Users\prakhar\Music\Angular\CareConnect\careConnect-backend\src\main\java\com\careconnect\entity\NurseProfile.java
 C:\Users\prakhar\Music\Angular\CareConnect\careConnect-backend\src\main\java\com\careconnect\entity\Payment.java
 C:\Users\prakhar\Music\Angular\CareConnect\careConnect-backend\src\main\java\com\careconnect\repository\MessageRepository.java
+C:\Users\prakhar\Music\Angular\CareConnect\careConnect-backend\src\main\java\com\careconnect\dto\request\VitalSignRequest.java
 C:\Users\prakhar\Music\Angular\CareConnect\careConnect-backend\src\main\java\com\careconnect\CareConnectApplication.java
 C:\Users\prakhar\Music\Angular\CareConnect\careConnect-backend\src\main\java\com\careconnect\dto\request\TeamMemberRequest.java
 C:\Users\prakhar\Music\Angular\CareConnect\careConnect-backend\src\main\java\com\careconnect\repository\UserRepository.java
@@ -64,6 +68,7 @@ C:\Users\prakhar\Music\Angular\CareConnect\careConnect-backend\src\main\java\com
 C:\Users\prakhar\Music\Angular\CareConnect\careConnect-backend\src\main\java\com\careconnect\entity\AppointmentApplication.java
 C:\Users\prakhar\Music\Angular\CareConnect\careConnect-backend\src\main\java\com\careconnect\service\CredentialService.java
 C:\Users\prakhar\Music\Angular\CareConnect\careConnect-backend\src\main\java\com\careconnect\entity\NurseApplication.java
+C:\Users\prakhar\Music\Angular\CareConnect\careConnect-backend\src\main\java\com\careconnect\entity\VitalSign.java
 C:\Users\prakhar\Music\Angular\CareConnect\careConnect-backend\src\main\java\com\careconnect\repository\OrganizationRepository.java
 C:\Users\prakhar\Music\Angular\CareConnect\careConnect-backend\src\main\java\com\careconnect\dto\response\JobResponse.java
 C:\Users\prakhar\Music\Angular\CareConnect\careConnect-backend\src\main\java\com\careconnect\service\NurseService.java
@@ -85,6 +90,7 @@ C:\Users\prakhar\Music\Angular\CareConnect\careConnect-backend\src\main\java\com
 C:\Users\prakhar\Music\Angular\CareConnect\careConnect-backend\src\main\java\com\careconnect\repository\ManagementTeamRepository.java
 C:\Users\prakhar\Music\Angular\CareConnect\careConnect-backend\src\main\java\com\careconnect\dto\request\ShiftPaymentRequest.java
 C:\Users\prakhar\Music\Angular\CareConnect\careConnect-backend\src\main\java\com\careconnect\controller\AuthController.java
+C:\Users\prakhar\Music\Angular\CareConnect\careConnect-backend\src\main\java\com\careconnect\controller\VitalSignController.java
 C:\Users\prakhar\Music\Angular\CareConnect\careConnect-backend\src\main\java\com\careconnect\enums\UserRole.java
 C:\Users\prakhar\Music\Angular\CareConnect\careConnect-backend\src\main\java\com\careconnect\controller\JobController.java
 C:\Users\prakhar\Music\Angular\CareConnect\careConnect-backend\src\main\java\com\careconnect\controller\ComplianceController.java
@@ -97,6 +103,7 @@ C:\Users\prakhar\Music\Angular\CareConnect\careConnect-backend\src\main\java\com
 C:\Users\prakhar\Music\Angular\CareConnect\careConnect-backend\src\main\java\com\careconnect\dto\response\AppointmentResponse.java
 C:\Users\prakhar\Music\Angular\CareConnect\careConnect-backend\src\main\java\com\careconnect\exception\ResourceNotFoundException.java
 C:\Users\prakhar\Music\Angular\CareConnect\careConnect-backend\src\main\java\com\careconnect\service\MessageService.java
+C:\Users\prakhar\Music\Angular\CareConnect\careConnect-backend\src\main\java\com\careconnect\service\VitalSignService.java
 C:\Users\prakhar\Music\Angular\CareConnect\careConnect-backend\src\main\java\com\careconnect\entity\Message.java
 C:\Users\prakhar\Music\Angular\CareConnect\careConnect-backend\src\main\java\com\careconnect\controller\AdminController.java
 C:\Users\prakhar\Music\Angular\CareConnect\careConnect-backend\src\main\java\com\careconnect\service\ShiftService.java

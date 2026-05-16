@@ -113,4 +113,20 @@ public class AppointmentController {
         appointmentService.withdrawApplication(id, nurseUserId);
         return ResponseEntity.ok(ApiResponse.success("Application withdrawn", null));
     }
+
+    @PostMapping("/{id}/reconcile/nurse")
+    @Operation(summary = "Nurse confirms shift reconciliation for a completed appointment")
+    public ResponseEntity<ApiResponse<AppointmentResponse>> reconcileByNurse(
+            @PathVariable Long id, @RequestParam Long nurseUserId) {
+        return ResponseEntity.ok(ApiResponse.success("Reconciliation confirmed by nurse",
+                appointmentService.reconcileByNurse(nurseUserId, id)));
+    }
+
+    @PostMapping("/{id}/reconcile/patient")
+    @Operation(summary = "Patient confirms shift reconciliation for a completed appointment")
+    public ResponseEntity<ApiResponse<AppointmentResponse>> reconcileByPatient(
+            @PathVariable Long id, @RequestParam Long patientUserId) {
+        return ResponseEntity.ok(ApiResponse.success("Reconciliation confirmed by patient",
+                appointmentService.reconcileByPatient(patientUserId, id)));
+    }
 }

@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface PaymentRepository extends JpaRepository<Payment, Long> {
@@ -41,4 +42,10 @@ public interface PaymentRepository extends JpaRepository<Payment, Long> {
 
     @Query("SELECT COALESCE(SUM(p.amount), 0) FROM Payment p WHERE p.nurse.id = :nurseId AND p.paymentStructure = 'SHIFT' AND p.status = 'PENDING'")
     BigDecimal sumPendingShiftsByNurseId(@Param("nurseId") Long nurseId);
+
+    Optional<Payment> findByReferenceNumber(String referenceNumber);
+
+    // ALL shift payments for a patient (pending + processed) — for payment history
+    @Query("SELECT p FROM Payment p WHERE p.paidByUserId = :patientUserId AND p.paymentStructure = 'SHIFT' ORDER BY p.paymentDate DESC")
+    List<Payment> findAllShiftsByPatientUserId(@Param("patientUserId") Long patientUserId);
 }

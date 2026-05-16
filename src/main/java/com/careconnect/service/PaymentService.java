@@ -17,7 +17,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -130,16 +133,38 @@ public class PaymentService {
     // Patient pays all pending shifts for one appointment (simulation)
     @Transactional
     public List<PaymentResponse> processPatientPayment(Long patientUserId, ProcessPaymentRequest req) {
+        // Validate nurse has the requested payment method set up
+        Appointment appt = appointmentRepository.findById(req.getAppointmentId())
+                .orElseThrow(() -> new ResourceNotFoundException("Appointment", req.getAppointmentId()));
+        NurseProfile nurse = appt.getNurse();
+        if (nurse == null) throw new BadRequestException("No nurse assigned to this appointment.");
+
+        boolean hasUpi          = nurse.getUpiId() != null && !nurse.getUpiId().isBlank();
+        boolean hasBankTransfer = nurse.getBankAccountNumber() != null && !nurse.getBankAccountNumber().isBlank();
+
+        if (!hasUpi && !hasBankTransfer) {
+            throw new BadRequestException("Nurse has not added payment details yet. Please ask them to add bank/UPI details first.");
+        }
+        if ("UPI".equals(req.getPaymentMethod()) && !hasUpi) {
+            throw new BadRequestException("Nurse has not added UPI details. Please use bank transfer or ask nurse to add UPI.");
+        }
+        if ("BANK_TRANSFER".equals(req.getPaymentMethod()) && !hasBankTransfer) {
+            throw new BadRequestException("Nurse has not added bank transfer details. Please use UPI or ask nurse to add bank details.");
+        }
+
         List<Payment> pending = paymentRepository.findPendingShiftsByAppointment(req.getAppointmentId(), patientUserId);
         if (pending.isEmpty()) {
-            throw new BadRequestException("No pending payments found for this appointment");
+            throw new BadRequestException("No pending payments found for this appointment.");
         }
+
         pending.forEach(p -> {
             p.setStatus(PaymentStatus.PROCESSED);
             p.setPaymentMethod(req.getPaymentMethod());
+            p.setReferenceNumber(generateReference());
         });
         paymentRepository.saveAll(pending);
-        log.info("Patient {} processed {} shift payment(s) for appointment {}", patientUserId, pending.size(), req.getAppointmentId());
+        log.info("Patient {} processed {} shift payment(s) for appointment {} via {}",
+                patientUserId, pending.size(), req.getAppointmentId(), req.getPaymentMethod());
         return pending.stream().map(this::toResponse).collect(Collectors.toList());
     }
 
@@ -191,7 +216,30 @@ public class PaymentService {
                 .stream().map(this::toResponse).collect(Collectors.toList());
     }
 
+    // ── Reference Number Lookup ───────────────────────────────────────────────
+
+    @Transactional(readOnly = true)
+    public PaymentResponse getByReference(String referenceNumber) {
+        Payment p = paymentRepository.findByReferenceNumber(referenceNumber.toUpperCase())
+                .orElseThrow(() -> new ResourceNotFoundException("Payment with reference " + referenceNumber));
+        return toResponse(p);
+    }
+
+    // ── Patient Payment History (all — pending + processed) ───────────────────
+
+    @Transactional(readOnly = true)
+    public List<PaymentResponse> getAllShiftsByPatient(Long patientUserId) {
+        return paymentRepository.findAllShiftsByPatientUserId(patientUserId)
+                .stream().map(this::toResponse).collect(Collectors.toList());
+    }
+
     // ── Helpers ───────────────────────────────────────────────────────────────
+
+    private String generateReference() {
+        String datePart = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+        String randPart = UUID.randomUUID().toString().replace("-", "").substring(0, 7).toUpperCase();
+        return "CC-" + datePart + "-" + randPart;
+    }
 
     private NurseProfile findNurseByUserId(Long userId) {
         return nurseProfileRepository.findByUserId(userId)
@@ -215,6 +263,15 @@ public class PaymentService {
             for (String part : p.getDescription().split("\\|")) {
                 if (part.startsWith("Org=")) { orgName = part.substring(4); break; }
             }
+        }
+
+        String patientFirstName = null;
+        String patientLastName  = null;
+        if (p.getAppointment() != null && p.getAppointment().getPatient() != null) {
+            patientFirstName = p.getAppointment().getPatientFirstName() != null
+                    ? p.getAppointment().getPatientFirstName()
+                    : p.getAppointment().getPatient().getFullName();
+            patientLastName  = p.getAppointment().getPatientLastName();
         }
 
         return PaymentResponse.builder()
@@ -242,8 +299,11 @@ public class PaymentService {
                 .nurseBankName(nurse.getBankName())
                 .nursePreferredPaymentMode(nurse.getPreferredPaymentMode())
                 .patientName(patientName)
+                .patientFirstName(patientFirstName)
+                .patientLastName(patientLastName)
                 .orgName(orgName)
                 .appointmentCareNeeds(p.getAppointment() != null ? p.getAppointment().getCareNeeds() : null)
+                .referenceNumber(p.getReferenceNumber())
                 .build();
     }
 

@@ -51,6 +51,25 @@ public class ShiftService {
             throw new BadRequestException("Invalid shift date format. Use YYYY-MM-DD");
         }
 
+        // ── Validation rules ──────────────────────────────────────────────────────
+        // Rule 1: no duplicate — same appointment + same date
+        if (shiftRepository.existsByAppointmentIdAndShiftDate(req.getAppointmentId(), parsedShiftDate)) {
+            throw new BadRequestException("A shift has already been marked for " + parsedShiftDate + ". You cannot mark the same date twice.");
+        }
+
+        // Rule 2: one-time appointment — only 1 shift total ever
+        if ("ONE_TIME".equalsIgnoreCase(appt.getScheduleType())
+                && shiftRepository.countByAppointmentId(req.getAppointmentId()) > 0) {
+            throw new BadRequestException("This is a one-time appointment. Only one shift can be marked.");
+        }
+
+        // Rule 3: shift date must not exceed appointment end date
+        if (appt.getEndDate() != null && parsedShiftDate.isAfter(appt.getEndDate().toLocalDate())) {
+            throw new BadRequestException("Shift date cannot be after the appointment end date ("
+                    + appt.getEndDate().toLocalDate() + ").");
+        }
+        // ─────────────────────────────────────────────────────────────────────────
+
         BigDecimal agreedRate = appt.getAgreedRatePerShift();
         BigDecimal negotiated = req.getNegotiatedRate();
 

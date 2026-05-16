@@ -46,4 +46,7 @@ public class PaymentResponse {
     private String patientName;        // for nurse's patient payment view
     private String orgName;            // for nurse's salary view
     private String appointmentCareNeeds;
+    private String referenceNumber;
+    private String patientFirstName;
+    private String patientLastName;
 }
