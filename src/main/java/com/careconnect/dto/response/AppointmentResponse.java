@@ -80,4 +80,12 @@ public class AppointmentResponse {
     private String reconciliationStatus;
     private Integer expectedShifts;
     private Integer actualShifts;
+
+    // Emergency
+    private Boolean isEmergency;
+    private String  emergencyType;
+
+    // Patient rating
+    private Integer patientRating;
+    private String  patientFeedback;
 }

@@ -4,6 +4,7 @@ import com.careconnect.dto.request.AppointmentApplicationRequest;
 import com.careconnect.dto.request.AppointmentRequest;
 import com.careconnect.dto.response.AppointmentApplicationResponse;
 import com.careconnect.dto.response.AppointmentResponse;
+import com.careconnect.dto.response.CredentialResponse;
 import com.careconnect.entity.Appointment;
 import com.careconnect.entity.AppointmentApplication;
 import com.careconnect.entity.NurseProfile;
@@ -14,6 +15,7 @@ import com.careconnect.exception.BadRequestException;
 import com.careconnect.exception.ResourceNotFoundException;
 import com.careconnect.repository.AppointmentApplicationRepository;
 import com.careconnect.repository.AppointmentRepository;
+import com.careconnect.repository.CredentialRepository;
 import com.careconnect.repository.NurseProfileRepository;
 import com.careconnect.repository.PatientProfileRepository;
 import com.careconnect.repository.ShiftRepository;
@@ -40,6 +42,7 @@ public class AppointmentService {
     private final AppointmentApplicationRepository apptApplicationRepository;
     private final NotificationService notificationService;
     private final ShiftRepository shiftRepository;
+    private final CredentialRepository credentialRepository;
 
     @Transactional
     public AppointmentResponse bookAppointment(Long patientUserId, AppointmentRequest request) {
@@ -83,6 +86,8 @@ public class AppointmentService {
                 .mobilityLevel(request.getMobilityLevel())
                 .dietRequirements(request.getDietRequirements())
                 .applicationDeadline(request.getApplicationDeadline())
+                .isEmergency(Boolean.TRUE.equals(request.getIsEmergency()))
+                .emergencyType(request.getEmergencyType())
                 .build();
 
         appointmentRepository.save(appointment);
@@ -91,7 +96,22 @@ public class AppointmentService {
         String care = appointment.getCareNeeds() != null ? appointment.getCareNeeds() : "Home Care";
         String loc  = appointment.getPatientCity() != null ? appointment.getPatientCity()
                     : appointment.getPatientState() != null ? appointment.getPatientState() : "India";
-        notificationService.broadcast("NEW_REQUEST", care + "|" + loc);
+
+        if (Boolean.TRUE.equals(appointment.getIsEmergency())) {
+            // Notify all emergency-available nurses immediately
+            String type = appointment.getEmergencyType() != null ? appointment.getEmergencyType() : "EMERGENCY";
+            nurseProfileRepository.findByAvailableForEmergencyTrue().stream()
+                .filter(n -> n.getUser() != null)
+                .forEach(n -> notificationService.pushToUser(
+                    n.getUser().getId(), "EMERGENCY_REQUEST",
+                    "🆘 Emergency Nurse Needed — " + type.replace("_", " "),
+                    care + " · " + loc + " — Respond immediately!",
+                    appointment.getId(), "APPOINTMENT"));
+            log.info("Emergency request #{} — notified {} nurses", appointment.getId(),
+                nurseProfileRepository.findByAvailableForEmergencyTrue().size());
+        } else {
+            notificationService.broadcast("NEW_REQUEST", care + "|" + loc);
+        }
 
         return toResponse(appointment);
     }
@@ -299,7 +319,43 @@ public class AppointmentService {
                 .reconciliationStatus(a.getReconciliationStatus())
                 .expectedShifts(a.getExpectedShifts())
                 .actualShifts((int) shiftRepository.countNonRejectedByAppointmentId(a.getId()))
+                .isEmergency(a.getIsEmergency())
+                .emergencyType(a.getEmergencyType())
+                .patientRating(a.getPatientRating())
+                .patientFeedback(a.getPatientFeedback())
                 .build();
+    }
+
+    @Transactional
+    public AppointmentResponse rateAppointment(Long appointmentId, Long patientUserId,
+                                               com.careconnect.dto.request.RatingRequest request) {
+        Appointment appt = appointmentRepository.findById(appointmentId)
+                .orElseThrow(() -> new ResourceNotFoundException("Appointment", appointmentId));
+
+        if (!appt.getPatient().getUser().getId().equals(patientUserId)) {
+            throw new com.careconnect.exception.BadRequestException("You can only rate your own appointments.");
+        }
+        if (appt.getPatientRating() != null) {
+            throw new com.careconnect.exception.BadRequestException("You have already rated this appointment.");
+        }
+
+        appt.setPatientRating(request.getRating());
+        appt.setPatientFeedback(request.getFeedback());
+        appointmentRepository.save(appt);
+
+        NurseProfile nurse = appt.getNurse();
+        if (nurse != null) {
+            double avg = appointmentRepository.findByNurseId(nurse.getId()).stream()
+                    .filter(a -> a.getPatientRating() != null)
+                    .mapToInt(Appointment::getPatientRating)
+                    .average()
+                    .orElse(0.0);
+            nurse.setRating(Math.round(avg * 10.0) / 10.0);
+            nurseProfileRepository.save(nurse);
+        }
+
+        log.info("Appointment {} rated {} stars by patient {}", appointmentId, request.getRating(), patientUserId);
+        return toResponse(appt);
     }
 
     private AppointmentApplicationResponse toApplicationResponse(AppointmentApplication a) {
@@ -326,11 +382,39 @@ public class AppointmentService {
                 .nursePreviousEmployment(nurse.getPreviousEmployment())
                 .nurseReferences(nurse.getReferences())
                 .nurseRating(nurse.getRating())
+                .nurseUserId(nurse.getUser() != null ? nurse.getUser().getId() : null)
+                .nurseCredentials(toCredentialResponses(nurse))
                 .salaryExpectation(a.getSalaryExpectation())
                 .note(a.getNote())
                 .status(a.getStatus())
                 .appliedAt(a.getAppliedAt())
                 .build();
+    }
+
+    @Transactional(readOnly = true)
+    public List<AppointmentResponse> getEmergencyByPatient(Long patientUserId) {
+        PatientProfile patient = patientProfileRepository.findByUserId(patientUserId)
+                .orElseThrow(() -> new ResourceNotFoundException("PatientProfile", patientUserId));
+        return appointmentRepository.findByPatientIdOrderByAppointmentDateDesc(patient.getId())
+                .stream()
+                .filter(a -> Boolean.TRUE.equals(a.getIsEmergency()))
+                .map(this::toResponse)
+                .collect(Collectors.toList());
+    }
+
+    private List<CredentialResponse> toCredentialResponses(NurseProfile nurse) {
+        return credentialRepository.findByNurseId(nurse.getId()).stream()
+                .map(c -> CredentialResponse.builder()
+                        .id(c.getId())
+                        .nurseId(nurse.getId())
+                        .nurseName(nurse.getFullName())
+                        .credentialType(c.getCredentialType())
+                        .issuedBy(c.getIssuedBy())
+                        .issuedDate(c.getIssuedDate())
+                        .expiryDate(c.getExpiryDate())
+                        .status(c.getStatus())
+                        .build())
+                .collect(Collectors.toList());
     }
 
     // ── Reconciliation ────────────────────────────────────────────────────────

@@ -2,6 +2,7 @@ package com.careconnect.controller;
 
 import com.careconnect.dto.request.AppointmentApplicationRequest;
 import com.careconnect.dto.request.AppointmentRequest;
+import com.careconnect.dto.request.RatingRequest;
 import com.careconnect.dto.response.ApiResponse;
 import com.careconnect.dto.response.AppointmentApplicationResponse;
 import com.careconnect.dto.response.AppointmentResponse;
@@ -112,6 +113,23 @@ public class AppointmentController {
             @PathVariable Long id, @RequestParam Long nurseUserId) {
         appointmentService.withdrawApplication(id, nurseUserId);
         return ResponseEntity.ok(ApiResponse.success("Application withdrawn", null));
+    }
+
+    @GetMapping("/patient/{patientUserId}/emergency")
+    @Operation(summary = "Get all emergency appointments for a patient")
+    public ResponseEntity<ApiResponse<List<AppointmentResponse>>> getEmergencyByPatient(
+            @PathVariable Long patientUserId) {
+        return ResponseEntity.ok(ApiResponse.success(appointmentService.getEmergencyByPatient(patientUserId)));
+    }
+
+    @PatchMapping("/{id}/rate")
+    @Operation(summary = "Patient rates a completed appointment (1–5 stars + optional feedback)")
+    public ResponseEntity<ApiResponse<AppointmentResponse>> rateAppointment(
+            @PathVariable Long id,
+            @RequestParam Long patientUserId,
+            @Valid @RequestBody RatingRequest request) {
+        return ResponseEntity.ok(ApiResponse.success("Rating submitted",
+                appointmentService.rateAppointment(id, patientUserId, request)));
     }
 
     @PostMapping("/{id}/reconcile/nurse")

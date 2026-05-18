@@ -33,6 +33,9 @@ public interface JobRepository extends JpaRepository<Job, Long> {
     @Query("SELECT j FROM Job j WHERE j.isEmergency = true AND j.status = 'ACTIVE' ORDER BY j.createdAt DESC")
     List<Job> findEmergencyJobs();
 
+    @Query("SELECT j FROM Job j WHERE j.organization.user.id = :orgUserId ORDER BY j.createdAt DESC")
+    List<Job> findByOrgUserId(@Param("orgUserId") Long orgUserId);
+
     long countByStatus(JobStatus status);
 
     @Query("SELECT COUNT(j) FROM Job j WHERE j.organization.user.id = :orgUserId")

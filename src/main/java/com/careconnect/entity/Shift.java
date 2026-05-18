@@ -49,4 +49,7 @@ public class Shift {
     private LocalDateTime patientMarkedAt;
 
     private LocalDateTime nurseConfirmedAt;
+
+    // Supervisor-assigned covering nurse (nullable — only set when coverage is needed)
+    private Long coveringNurseUserId;
 }

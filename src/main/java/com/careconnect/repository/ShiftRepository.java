@@ -40,4 +40,10 @@ public interface ShiftRepository extends JpaRepository<Shift, Long> {
     // Count non-rejected shifts (confirmed + pending) for reconciliation
     @Query("SELECT COUNT(s) FROM Shift s WHERE s.appointment.id = :appointmentId AND s.status <> 'REJECTED'")
     long countNonRejectedByAppointmentId(@Param("appointmentId") Long appointmentId);
+
+    // All shifts for nurses hired by an org (for supervisor shift-coverage view)
+    @Query("SELECT s FROM Shift s WHERE s.appointment.nurse.id IN " +
+           "(SELECT a.nurse.id FROM NurseApplication a WHERE a.job.organization.user.id = :orgUserId AND a.status = 'APPROVED') " +
+           "ORDER BY s.shiftDate DESC")
+    List<Shift> findByOrgUserId(@Param("orgUserId") Long orgUserId);
 }

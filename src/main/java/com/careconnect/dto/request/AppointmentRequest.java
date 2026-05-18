@@ -48,4 +48,9 @@ public class AppointmentRequest {
     private String mobilityLevel;
     private String dietRequirements;
     private LocalDateTime applicationDeadline;
+
+    // Emergency
+    private Boolean isEmergency;
+    private String  emergencyType;
+    private LocalDateTime endDate;
 }

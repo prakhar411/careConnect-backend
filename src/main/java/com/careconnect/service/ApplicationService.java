@@ -111,6 +111,7 @@ public class ApplicationService {
         return ApplicationResponse.builder()
                 .id(a.getId())
                 .nurseId(nurse.getId())
+                .nurseUserId(nurse.getUser() != null ? nurse.getUser().getId() : null)
                 .nurseName(nurse.getFullName())
                 .nursePhone(nurse.getPhone())
                 .nurseEmail(nurse.getUser() != null ? nurse.getUser().getEmail() : null)
@@ -134,6 +135,7 @@ public class ApplicationService {
                 .nurseIfsc(nurse.getBankIfscCode())
                 .nurseBankName(nurse.getBankName())
                 .nursePreferredPaymentMode(nurse.getPreferredPaymentMode())
+                .jobSalaryMin(a.getJob().getSalaryMin())
                 .build();
     }
 

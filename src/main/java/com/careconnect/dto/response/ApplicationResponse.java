@@ -12,6 +12,7 @@ import java.util.List;
 public class ApplicationResponse {
     private Long id;
     private Long nurseId;
+    private Long nurseUserId;
     private String nurseName;
     private String nursePhone;
     private String nurseEmail;
@@ -37,4 +38,5 @@ public class ApplicationResponse {
     private String nurseIfsc;
     private String nurseBankName;
     private String nursePreferredPaymentMode;
+    private java.math.BigDecimal jobSalaryMin;
 }

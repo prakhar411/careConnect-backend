@@ -72,6 +72,15 @@ public class Appointment {
     @Builder.Default
     private AppointmentStatus status = AppointmentStatus.PENDING;
 
+    // Emergency request fields
+    @Builder.Default
+    private Boolean isEmergency = false;
+    private String emergencyType;   // CHEST_PAIN | BREATHING | FALL | FEVER | STROKE | DIABETIC | ALLERGIC | UNCONSCIOUS | OTHER
+
+    // Patient rating for nurse (submitted after appointment completes)
+    private Integer patientRating;    // 1–5
+    private String  patientFeedback;
+
     // Reconciliation — populated by scheduler when endDate passes
     // PENDING | NURSE_CONFIRMED | PATIENT_CONFIRMED | AGREED | DISPUTED
     private String reconciliationStatus;

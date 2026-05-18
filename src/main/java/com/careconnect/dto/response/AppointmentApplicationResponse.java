@@ -33,6 +33,8 @@ public class AppointmentApplicationResponse {
     private String nursePreviousEmployment;
     private String nurseReferences;
     private Double nurseRating;
+    private Long   nurseUserId;
+    private java.util.List<com.careconnect.dto.response.CredentialResponse> nurseCredentials;
 
     // Bid info
     private Double salaryExpectation;
