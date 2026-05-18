@@ -70,6 +70,7 @@ public class SupervisorService {
                     .completedJobs(completed)
                     .totalJobs(active + completed)
                     .workloadStatus(status)
+                    .nurseRating(nurse.getRating())
                     .build();
         }).collect(Collectors.toList());
     }

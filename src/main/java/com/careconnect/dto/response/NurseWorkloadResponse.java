@@ -17,4 +17,5 @@ public class NurseWorkloadResponse {
     private long   totalJobs;
     // AVAILABLE | ACTIVE | OVERLOADED
     private String workloadStatus;
+    private Double nurseRating;
 }

@@ -24,6 +24,7 @@ public class CredentialService {
 
     private final CredentialRepository credentialRepository;
     private final NurseProfileRepository nurseProfileRepository;
+    private final NotificationService notificationService;
 
     @Transactional
     public CredentialResponse addCredential(Long nurseUserId, CredentialRequest request) {
@@ -75,6 +76,35 @@ public class CredentialService {
         credential.setStatus(CredentialStatus.VERIFIED);
         credentialRepository.save(credential);
         return toResponse(credential);
+    }
+
+    @Transactional
+    public CredentialResponse privilege(Long id) {
+        Credential credential = credentialRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Credential", id));
+        credential.setStatus(CredentialStatus.PRIVILEGED);
+        credentialRepository.save(credential);
+        log.info("Credential {} granted PRIVILEGED status", id);
+        return toResponse(credential);
+    }
+
+    @Transactional
+    public void sendRenewalReminder(Long id) {
+        Credential credential = credentialRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Credential", id));
+        NurseProfile nurse = credential.getNurse();
+        if (nurse.getUser() == null) return;
+
+        String type    = credential.getCredentialType() != null ? credential.getCredentialType() : "Credential";
+        String expiry  = credential.getExpiryDate() != null ? credential.getExpiryDate().toString() : "soon";
+        notificationService.pushToUser(
+                nurse.getUser().getId(),
+                "CREDENTIAL_REMINDER",
+                "⚠️ Credential Renewal Required — " + type,
+                "Your " + type + " expires on " + expiry + ". Please renew it promptly to remain compliant.",
+                credential.getId(), "CREDENTIAL"
+        );
+        log.info("Renewal reminder sent for credential {} to nurse {}", id, nurse.getFullName());
     }
 
     private CredentialResponse toResponse(Credential c) {

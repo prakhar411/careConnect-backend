@@ -66,4 +66,19 @@ public class CredentialController {
     public ResponseEntity<ApiResponse<CredentialResponse>> verify(@PathVariable Long id) {
         return ResponseEntity.ok(ApiResponse.success("Credential verified", credentialService.verify(id)));
     }
+
+    @PatchMapping("/{id}/privilege")
+    @PreAuthorize("hasRole('ORGANIZATION')")
+    @Operation(summary = "Grant privileged status to a verified credential")
+    public ResponseEntity<ApiResponse<CredentialResponse>> privilege(@PathVariable Long id) {
+        return ResponseEntity.ok(ApiResponse.success("Privilege granted", credentialService.privilege(id)));
+    }
+
+    @PostMapping("/{id}/remind")
+    @PreAuthorize("hasRole('ORGANIZATION')")
+    @Operation(summary = "Send renewal reminder notification to the nurse")
+    public ResponseEntity<ApiResponse<Void>> sendRenewalReminder(@PathVariable Long id) {
+        credentialService.sendRenewalReminder(id);
+        return ResponseEntity.ok(ApiResponse.success("Reminder sent", null));
+    }
 }

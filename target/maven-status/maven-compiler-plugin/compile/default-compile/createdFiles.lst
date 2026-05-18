@@ -29,8 +29,10 @@ com\careconnect\controller\CredentialController.class
 com\careconnect\entity\Appointment$AppointmentBuilder.class
 com\careconnect\service\JobService.class
 com\careconnect\service\FileStorageService.class
+com\careconnect\entity\TrainingRecord.class
 com\careconnect\entity\PatientProfile$PatientProfileBuilder.class
 com\careconnect\entity\HandoffNote$HandoffNoteBuilder.class
+com\careconnect\entity\OrgCourse$OrgCourseBuilder.class
 com\careconnect\controller\ManagementTeamController.class
 com\careconnect\entity\Appointment.class
 com\careconnect\dto\request\UpdateOrgRequest.class
@@ -60,6 +62,7 @@ com\careconnect\repository\NurseApplicationRepository.class
 com\careconnect\controller\AuthController.class
 com\careconnect\dto\request\ProcessPaymentRequest.class
 com\careconnect\repository\PaymentRepository.class
+com\careconnect\service\TrainingService.class
 com\careconnect\dto\request\EscalationRequest.class
 com\careconnect\dto\response\NurseResponse$NurseResponseBuilder.class
 com\careconnect\dto\response\ApplicationResponse.class
@@ -78,6 +81,7 @@ com\careconnect\service\PaymentService.class
 com\careconnect\exception\GlobalExceptionHandler.class
 com\careconnect\service\AuthService$1.class
 com\careconnect\service\NotificationService.class
+com\careconnect\dto\request\CompleteTrainingRequest.class
 com\careconnect\controller\SupervisorController.class
 com\careconnect\dto\request\ComplianceRequest.class
 com\careconnect\dto\request\ShiftPaymentRequest.class
@@ -99,6 +103,7 @@ com\careconnect\repository\OrganizationRepository.class
 com\careconnect\repository\NotificationRepository.class
 com\careconnect\service\VitalSignService.class
 com\careconnect\dto\response\LoginResponse$LoginResponseBuilder.class
+com\careconnect\repository\TrainingRecordRepository.class
 com\careconnect\controller\ShiftController.class
 com\careconnect\dto\response\TeamMemberResponse.class
 com\careconnect\controller\PatientController.class
@@ -121,6 +126,7 @@ com\careconnect\repository\AppointmentRepository.class
 com\careconnect\dto\request\RegisterRequest.class
 com\careconnect\controller\MedicalRecordController.class
 com\careconnect\enums\AppointmentStatus.class
+com\careconnect\dto\request\RatingRequest.class
 com\careconnect\dto\response\MessageResponse.class
 com\careconnect\entity\Credential.class
 com\careconnect\entity\User$UserBuilder.class
@@ -139,16 +145,20 @@ com\careconnect\service\OrganizationService.class
 com\careconnect\dto\response\MessageResponse$MessageResponseBuilder.class
 com\careconnect\service\ComplianceService.class
 com\careconnect\dto\response\CredentialResponse$CredentialResponseBuilder.class
+com\careconnect\dto\request\OrgCourseRequest.class
 com\careconnect\controller\ComplianceController.class
 com\careconnect\dto\response\AppointmentApplicationResponse.class
 com\careconnect\dto\response\HandoffNoteResponse$HandoffNoteResponseBuilder.class
 com\careconnect\entity\Message$MessageBuilder.class
+com\careconnect\entity\TrainingRecord$TrainingRecordBuilder.class
 com\careconnect\entity\Job$JobBuilder.class
 com\careconnect\dto\response\ComplianceResponse.class
 com\careconnect\enums\ApplicationStatus.class
 com\careconnect\dto\response\ApiResponse.class
+com\careconnect\entity\OrgCourse.class
 com\careconnect\entity\Message.class
 com\careconnect\repository\HandoffNoteRepository.class
+com\careconnect\controller\TrainingController.class
 com\careconnect\entity\AppointmentApplication$AppointmentApplicationBuilder.class
 com\careconnect\config\SecurityConfig.class
 com\careconnect\controller\ApplicationController.class
@@ -156,6 +166,7 @@ com\careconnect\exception\ResourceNotFoundException.class
 com\careconnect\dto\request\AppointmentRequest.class
 com\careconnect\dto\response\EscalationResponse$EscalationResponseBuilder.class
 com\careconnect\repository\CredentialRepository.class
+com\careconnect\repository\OrgCourseRepository.class
 com\careconnect\entity\VitalSign$VitalSignBuilder.class
 com\careconnect\controller\FileController.class
 com\careconnect\controller\GeoController.class
