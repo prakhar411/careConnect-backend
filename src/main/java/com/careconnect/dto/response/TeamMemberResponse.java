@@ -15,6 +15,9 @@ public class TeamMemberResponse {
     private String email;
     private String phone;
     private LocalDate joinDate;
+    private String department;
+    private String designation;
+    private String qualification;
     private String status;
     private LocalDateTime createdAt;
 }

@@ -32,6 +32,10 @@ public class ManagementTeamMember {
     private String phone;
     private LocalDate joinDate;
 
+    private String department;    // Cardiology, Neurology, Emergency, etc.
+    private String designation;   // Senior Consultant, Junior Doctor, Resident, etc.
+    private String qualification; // MBBS, MD, MS, etc.
+
     @Builder.Default
     private String status = "Active";
 

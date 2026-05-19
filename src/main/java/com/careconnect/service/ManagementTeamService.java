@@ -41,6 +41,9 @@ public class ManagementTeamService {
                 .email(request.getEmail())
                 .phone(request.getPhone())
                 .joinDate(request.getJoinDate())
+                .department(request.getDepartment())
+                .designation(request.getDesignation())
+                .qualification(request.getQualification())
                 .build();
 
         return toResponse(teamRepository.save(member));
@@ -68,6 +71,9 @@ public class ManagementTeamService {
                 .email(m.getEmail())
                 .phone(m.getPhone())
                 .joinDate(m.getJoinDate())
+                .department(m.getDepartment())
+                .designation(m.getDesignation())
+                .qualification(m.getQualification())
                 .status(m.getStatus())
                 .createdAt(m.getCreatedAt())
                 .build();
