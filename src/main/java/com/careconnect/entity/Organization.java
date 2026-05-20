@@ -64,6 +64,9 @@ public class Organization {
     @Builder.Default
     private String status = "ACTIVE";
 
+    @Builder.Default
+    private Boolean verifiedByAdmin = false;
+
     @CreationTimestamp
     @Column(updatable = false)
     private LocalDateTime createdAt;

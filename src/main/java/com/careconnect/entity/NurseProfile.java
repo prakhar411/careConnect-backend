@@ -61,4 +61,8 @@ public class NurseProfile {
     // Emergency availability
     @Builder.Default
     private Boolean availableForEmergency = false;
+
+    // Platform Admin verification
+    @Builder.Default
+    private Boolean verifiedByAdmin = false;
 }

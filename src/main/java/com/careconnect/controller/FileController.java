@@ -28,12 +28,18 @@ public class FileController {
 
     private String detectContentType(String filename) {
         String lower = filename.toLowerCase();
-        if (lower.endsWith(".pdf"))  return "application/pdf";
+        if (lower.endsWith(".pdf"))   return "application/pdf";
         if (lower.endsWith(".jpg") || lower.endsWith(".jpeg")) return "image/jpeg";
-        if (lower.endsWith(".png"))  return "image/png";
-        if (lower.endsWith(".gif"))  return "image/gif";
-        if (lower.endsWith(".doc"))  return "application/msword";
-        if (lower.endsWith(".docx")) return "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+        if (lower.endsWith(".png"))   return "image/png";
+        if (lower.endsWith(".gif"))   return "image/gif";
+        if (lower.endsWith(".webp"))  return "image/webp";
+        if (lower.endsWith(".mp4"))   return "video/mp4";
+        if (lower.endsWith(".webm"))  return "video/webm";
+        if (lower.endsWith(".mov"))   return "video/quicktime";
+        if (lower.endsWith(".avi"))   return "video/x-msvideo";
+        if (lower.endsWith(".mkv"))   return "video/x-matroska";
+        if (lower.endsWith(".doc"))   return "application/msword";
+        if (lower.endsWith(".docx"))  return "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
         return "application/octet-stream";
     }
 }

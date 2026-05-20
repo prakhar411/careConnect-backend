@@ -214,6 +214,7 @@ public class AuthService {
                     .map(PatientProfile::getFullName).orElse(user.getEmail());
             case ORGANIZATION -> organizationRepository.findByUserId(user.getId())
                     .map(Organization::getOrgName).orElse(user.getEmail());
+            case PLATFORM_ADMIN -> "Platform Administrator";
         };
     }
 }

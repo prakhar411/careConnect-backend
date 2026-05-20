@@ -9,4 +9,5 @@ import java.util.List;
 @Repository
 public interface EscalationRepository extends JpaRepository<Escalation, Long> {
     List<Escalation> findByOrgUserIdOrderByCreatedAtDesc(Long orgUserId);
+    long countByStatus(String status);
 }
